@@ -1,0 +1,902 @@
+Backend Engineering
+Development Plan
+
+Java · Spring Boot · Spring Security · SDLC
+Programme
+Five-week backend track
+Capstone
+Recruitment Management Platform
+Delivered on
+GitHub
+Owner
+Mohanad Magdy
+Contents
+§
+Section
+Covers
+1
+How to Use This Plan
+What this document is and how to work through it
+2
+What You Will Be Able to Do
+The capabilities this plan is aimed at
+3
+Technology Stack
+Versions and tooling
+4
+Working Practices and Design Principles
+Definition of Done, code review, AI use, SOLID, design patterns
+5
+Starting-Point Check
+Self-assessment before Week 1, and how it adjusts the plan
+6
+Week-by-Week Study Plan
+Weeks 1–5: topics, what to watch, what to read, what to build
+7
+Capstone Project Specification
+Requirements and acceptance criteria for the final submission
+8
+Full Resource Library
+Every course, book and reference in one place
+1. How to Use This Plan
+This is a five-week, full-time backend development plan. It takes an engineer from wherever they are now to being able to design, build, secure, test and ship a Spring Boot service without supervision.
+Everything converges on one thing submitted at the end: a Recruitment Management Platform, delivered as a GitHub repository. The study material is sequenced so that each week teaches exactly what the next slice of that project needs. Nothing here is theory for its own sake.
+
+1.1 The shape of each week
+Every week in Section 6 has the same five parts. Work through them in order.
+Part
+What to do with it
+Objectives
+The capabilities you should have by the end of the week. Read these first — they tell you what to pay attention to in everything that follows.
+Topics
+The concepts to cover. Use this as a checklist; if you finish the week and one of these is still fuzzy, the week is not finished.
+Watch
+LinkedIn Learning courses, with the specific scope needed. Watch at 1.25× or 1.5× and code along — passive watching does almost nothing.
+Read
+Official documentation and book chapters. The reference docs are the primary source. Building the habit of going there before searching for a blog post is the single biggest difference between engineers who get unstuck quickly and those who do not.
+Build
+The part of the project this week's learning unlocks, pushed to GitHub. You do not understand a topic until you have made something with it fail and then made it work.
+
+Each week closes with a self-check: questions to answer from memory. Being unable to answer one is a signal to go back, not a reason to move on.
+
+A rough split of your time
+Roughly 30% watching and reading, 70% building — see Section 1.2 for what that means in hours.
+Front-load the watching to the start of each week so the rest of the week is hands-on.
+If you find yourself watching more than building for two days running, stop and go write code.
+1.2 The pace
+This is an intensive plan and the days are full. Understanding that before starting is the single most important thing about what follows.
+In practice it means long days, little slack between topics, and no week where you coast. A concept introduced on Monday is applied on Tuesday. There is almost no buffer to absorb a day spent stuck, which is why the 45-minute rule in Section 4.2 matters so much.
+
+What a normal week looks like
+Expect 45–50 hours, and to be genuinely tired by Friday. That is the deal, and it should be stated openly rather than discovered in Week 2.
+Roughly 12–15 hours a week of watching and reading, and 30–35 hours of building. The reading is not optional and it is not homework to skip — it is the part that makes the building go faster.
+Sustainable does not mean easy, but it does mean sustainable. Working past 8pm regularly, or through a weekend, is a signal that something is wrong with the plan or the support around it — raise it rather than absorbing it.
+
+Where the intensity lands
+Week
+Load profile
+What makes it heavy
+1
+Heaviest for learning
+Five courses plus database design and Git. Front-load the watching hard. This is the week most likely to feel overwhelming, and also the week that makes every later week cheaper.
+2
+Balanced
+Spring Boot fundamentals and the first real build, plus tests from day one. The concepts are new and the code volume is high at the same time.
+3
+Heaviest for depth
+Spring Security is the hardest single topic in the plan and it gets one week. Expect to reread the filter chain material more than once.
+4
+Heaviest for building
+Mostly construction, with concurrency and file handling as new material. The lightest reading week and the densest coding week.
+5
+Heaviest for breadth
+Testing, containerization, security review, documentation and presentation all land together. The feature freeze on day one is what makes this survivable.
+
+The project scope is deliberately narrow. Shipping a small number of services is what makes it possible to go deep on each one rather than skimming several.
+
+Component
+Status
+Note
+User & Authentication Service
+Required
+JWT-based authentication and role-based access control. This is the centre of the project.
+Candidate Management Service
+Required
+CV upload and parsing, profiles, tagging, search, application status.
+LDAP integration
+Bonus
+Learn it and add it only once JWT authentication is complete and correct. Valuable to understand, but not part of the required scope.
+Application Tracking Service
+Bonus
+Stage transitions, audit log, assignment, feedback. Attempt only if both required services are finished.
+
+Two services built properly are worth far more than four built badly. Deciding what not to build, and saying so early, is a skill in its own right — not a concession. The bonus items are bonus in terms of what gets shipped, not what gets learned: the LDAP material in Section 7.4 is worth reading even if you never wire it up.
+2. What You Will Be Able to Do
+At the end of Week 5, unaided:
+
+Area
+Capability
+Java
+Work confidently in modern Java: records, sealed types, pattern matching, streams, Optional, generics, and the collection and concurrency choices that affect performance.
+Design
+Apply the SOLID principles deliberately rather than by accident, recognise the design patterns already at work inside Spring, and choose a pattern because the problem calls for it rather than to show you know it.
+Spring Boot
+Build a layered REST service from an empty directory: controllers, DTOs, service layer, repositories, validation, global exception handling, profile-based configuration, and Flyway-managed schema migrations.
+Spring Security
+Explain the filter chain from memory. Implement JWT authentication with refresh tokens and method- and route-level role-based access control. Explain the OAuth2 roles and grant types and how a resource server validates a token, and describe directory-backed authentication — and say what threat each control actually mitigates.
+Data
+Design a normalised schema, model entities and relationships in JPA, avoid the N+1 problem, paginate and sort, and write a dynamic search query without concatenating SQL strings.
+Testing
+Write unit tests with JUnit 5 and Mockito, slice tests with @WebMvcTest and @DataJpaTest, and integration tests against a real PostgreSQL container.
+SDLC
+Take a requirement from issue through design note, branch, commits, pull request, review, merge and release — and explain why each step exists.
+Engineering craft
+Read a stack trace and find the cause. Use a debugger instead of print statements. Search the documentation before asking. Write a commit message someone else can use.
+Communication
+Give a clear status update, ask for help at the right moment, report progress honestly, and demo working software to someone who did not write it.
+
+How you will know where you stand
+Feedback is continuous — informally through the week, and in writing at the review points at the end of Weeks 3 and 5.
+If something is going wrong, you hear it early and specifically, with what to do about it. Nothing is saved up for the end.
+3. Technology Stack
+The same stack the team uses. No teaching-only frameworks, no toy databases.
+
+Layer
+Choice
+Notes
+Language
+Java 21 (LTS)
+Records, sealed types, pattern matching, virtual threads. Course material targeting Java 17 remains almost entirely applicable.
+Framework
+Spring Boot 4.1.x
+Current stable line, built on Spring Framework 7. Supported to July 2027.
+Security
+Spring Security 7
+Ships with Spring Boot 4. Lambda DSL only; no deprecated WebSecurityConfigurerAdapter patterns.
+Authentication
+JWT, stateless
+The required mechanism. LDAP is a bonus extension, not an alternative.
+Build
+Maven
+Wrapper committed to the repository.
+Database
+PostgreSQL 16+
+Run via Docker Compose. H2 for slice tests only, never as the application database.
+Migrations
+Flyway
+ddl-auto set to validate. Every schema change is a versioned migration.
+Persistence
+Spring Data JPA / Hibernate
+With explicit attention to fetch strategy and the N+1 problem.
+Testing
+JUnit 5, Mockito, AssertJ, Testcontainers
+Testcontainers for integration tests against real PostgreSQL.
+API docs
+springdoc-openapi
+Swagger UI must be live and accurate at submission.
+Quality
+Spotless, JaCoCo
+Formatting enforced automatically so reviews are about design, not style.
+Containers
+Docker, Docker Compose
+The whole system must start with a single command on a clean machine.
+Source control
+Git and GitHub
+The project is delivered as a GitHub repository. Issues for tracking work, pull requests for review, Actions for CI, a tagged release for the final submission.
+
+Course versions vs. the stack you are using
+Most LinkedIn Learning Spring material currently targets Spring Boot 3 and Spring Security 6, and the Java course targets Java 17. You are building on Boot 4, Security 7 and Java 21.
+The concepts transfer almost entirely; the syntax differs in places. When a course shows something that does not compile, go to the reference documentation for the current form — and treat that as useful practice, because reconciling a tutorial against real docs is something you will do constantly.
+Course titles and availability change. If a course listed here has been retired, search the topic hubs in Section 8 for the current equivalent.
+3.1 Repository setup
+Set this up in the first two days and then leave it alone.
+A GitHub repository, private unless told otherwise, with a README from the first commit.
+Branch protection on main: no direct pushes, at least one approving review on every pull request.
+GitHub Issues for tracking work, with the project broken into issues before Week 2 begins.
+A GitHub Actions workflow running build, tests and coverage on every pull request.
+Documentation lives in the repository as Markdown — a README plus a docs folder. Design notes and architecture decisions belong next to the code, not in a separate system.
+A .gitignore that covers target/, IDE files and any local environment file. Nothing secret ever gets committed.
+4. Working Practices and Design Principles
+These are not optional extras around the technical work. They matter as much as the code, and they are a large part of what separates an engineer who is useful in month two from one who is useful in month eight.
+4.1 Definition of Done
+A piece of work is not finished until every line below is true. Write this somewhere visible.
+The acceptance criteria are met.
+The code is formatted by Spotless and has no compiler or linter warnings.
+Unit tests cover the new logic; integration tests cover the new endpoint.
+The full build passes locally and in GitHub Actions.
+A pull request has been opened, reviewed and approved.
+OpenAPI documentation reflects any API change.
+The GitHub issue is closed with a one-line summary of what was actually built.
+Nothing secret is committed — no passwords, keys, tokens or real personal data.
+4.2 The 45-minute rule
+Struggle with a problem for 45 minutes. Then ask — in writing, including what you tried and what you observed.
+Asking after 45 minutes is good judgement. Asking after four hours costs the project. Asking after four minutes costs your learning. Nobody will think less of you for asking; the only thing that looks bad is silently burning a day. With five weeks in total, a day lost is a meaningful share of everything you have.
+4.3 Code review
+You will both give and receive reviews on GitHub. Reviewing code is a learned skill, not an innate one, and reading someone else's solution to a problem you also solved is one of the fastest ways to improve.
+Keep pull requests small. A 200-line PR gets a real review; a 2,000-line PR gets a rubber stamp.
+Write a description that says what changed and why, not just what.
+When reviewing, comment on design and correctness. Formatting is the tool's job.
+When receiving a review, treat every comment as a question about the code rather than about you. Push back when you disagree, with reasoning.
+4.4 Using AI coding assistants
+You will use them. The rules are simple and there is only one that really matters.
+The rule that matters: any code you submit, you must be able to explain line by line. This gets checked at every review point.
+Avoid them in Week 1. The struggle in that week is where the foundations come from, and shortcutting it will cost you in Week 5.
+From Week 2 onward, use them freely for boilerplate, test data, documentation drafts and explaining unfamiliar errors.
+Not permitted for the starting-point check in Section 5, or in the final question-and-answer session.
+When an assistant gives you a confidently wrong answer — and it will — treat that as the lesson. Learning to distrust fluent output is now a core engineering skill.
+4.5 SOLID
+Five principles that describe what maintainable object-oriented code looks like. They are easy to recite and hard to apply, and the gap between those two things is most of what this section is about.
+Do not treat them as rules to obey mechanically. Every one of them can be over-applied into an unreadable mess of tiny interfaces. Treat them as names for problems you will feel in the code — when a class is painful to change, one of these is usually why.
+
+Principle
+What it says
+What it looks like in this project
+Single Responsibility
+A class should have one reason to change.
+Your CandidateService handles candidate logic. It does not also parse PDFs, send email and build JWTs. When you catch yourself naming something Manager or Helper, you have usually found a violation.
+Open/Closed
+Open for extension, closed for modification.
+Adding a new CV format should mean adding a new parser class, not adding another branch to an if/else chain inside the existing one.
+Liskov Substitution
+A subtype must be usable anywhere its parent is, without surprises.
+Any AuthenticationProvider you write must behave like an AuthenticationProvider — same contract, same exception types. If callers need to know which implementation they have, the abstraction is wrong.
+Interface Segregation
+Many small interfaces beat one large one.
+A narrow CvParser interface with one method is easier to implement and test than a broad CandidateOperations interface whose implementers throw UnsupportedOperationException for half of it.
+Dependency Inversion
+Depend on abstractions, not concretions.
+This is the one Spring is built on. Your service depends on the CandidateRepository interface; Spring injects the implementation. That is why you can pass a mock in a unit test at all.
+
+The test that matters more than the acronym
+When you need to change something, how many files do you have to open, and how confident are you that nothing else broke?
+If the answer is "many" and "not very", go back and ask which principle the code is fighting. That question is more useful than checking the five off a list.
+4.6 Design patterns you will meet
+You do not need to memorise a catalogue. You do need to recognise the patterns already running inside the framework you are using, because Spring is largely an assembly of them — and once you can name what Spring is doing, its behaviour stops being magic and starts being predictable.
+The table below maps each pattern to the exact place you will run into it in this project. Learn them there, in context, rather than from a textbook example about shapes and animals.
+
+Pattern
+Where you meet it
+Why it is there
+Dependency Injection
+Every Spring bean, Week 2 onward
+Inverts control of construction so a class never builds its own collaborators — and so tests can supply different ones.
+Singleton
+The default Spring bean scope
+One shared instance per context. Understand it, because it is also why a stateful field on a service is a bug waiting to happen.
+Factory
+BeanFactory, and your own token creation
+Centralises construction when what gets built depends on runtime input.
+Builder
+Fluent APIs, DTOs, test data builders
+Readable construction of objects with many optional fields, without a six-argument constructor.
+Proxy
+How @Transactional and @PreAuthorize actually work
+Spring wraps your bean in a proxy to add behaviour around your method. This explains the self-invocation trap in Week 2 — a call to this.method() bypasses the proxy entirely.
+Chain of Responsibility
+The Spring Security filter chain (Week 3)
+Each filter handles a request or passes it along. Once you see the chain as this pattern, Week 3 gets substantially easier.
+Strategy
+AuthenticationProvider, PasswordEncoder, CV parsers (Week 4)
+Swappable algorithms behind one interface. This is what makes adding LDAP later a configuration change rather than a rewrite.
+Template Method
+JdbcTemplate, RestTemplate, abstract test bases
+The framework owns the skeleton of the algorithm; you fill in the parts that vary.
+Adapter
+Wrapping PDFBox and POI behind your own interface (Week 4)
+Keeps a third-party library at arm's length so replacing it later touches one class.
+Specification
+Dynamic candidate search (Week 4)
+Composable query predicates. The reason your search does not become a wall of string concatenation.
+Repository
+Every Spring Data interface
+A collection-like abstraction over persistence, so business logic never talks SQL.
+Observer
+Spring application events (bonus work)
+Lets a state change publish an event without knowing or caring who reacts to it.
+State
+The application stage machine (bonus work)
+Legal transitions live in the domain rather than in a growing if/else block in a controller.
+DTO
+Every API boundary, Week 2 onward
+Separates what you store from what you expose, so a schema change is not automatically a breaking API change.
+
+A warning about patterns
+The most common mistake with patterns is reaching for one because you have just learned it. A pattern is a solution to a specific recurring problem; applied without that problem, it is just extra indirection someone else has to read through.
+In a review you may be asked why you used a pattern. "It seemed like good practice" is a weak answer. "The parsing logic had to vary by file type and I did not want a growing if/else" is a strong one.
+The reverse also gets flagged: a 300-line method with six nested conditionals is a pattern-shaped problem going unaddressed.
+5. Starting-Point Check
+Before Week 1 proper, work through the exercises below. Three hours, open book, no AI assistance.
+Nothing rides on the result. Its only purpose is to set the right starting pace — pitching the material two levels above or below where someone actually is wastes the whole five weeks. Answer honestly; there is no advantage in inflating it.
+
+Part
+Time
+What it covers
+A — Java core
+60 min
+Collections, generics, streams, Optional, exception handling, equals and hashCode, interface vs. abstract class.
+B — OOP & design
+45 min
+Model a small domain — a library lending system, say — in classes and interfaces.
+C — SQL & data
+30 min
+Joins, a GROUP BY aggregation, and an explanation of what an index does.
+D — Git & tooling
+15 min
+Branch, commit, resolve a merge conflict, open a pull request.
+E — Reasoning
+30 min
+Find and explain three deliberate bugs in a 40-line class. This one matters most — debugging instinct is the best single predictor of how fast someone ramps.
+
+How the result changes the pace
+Result
+Track
+Adjustment
+Solid on A–C
+Standard
+Start at Week 1 and follow the plan as written.
+Gaps in A or B
+Foundation
+Add two to three days of Java and OOP work ahead of Week 1, keeping Week 1 itself intact. All bonus project work is formally dropped so the required scope still fits; it is removed, not left as a stretch to quietly chase.
+Strong across all
+Extended
+Compress Week 1 to two days. Use the recovered time for the LDAP integration and, if it fits, the Application Tracking Service.
+
+Landing on the Foundation track is not a bad outcome and counts against you in no way at all. An honest answer here is worth a great deal, because there is little slack later to absorb a bad guess.
+6. Week-by-Week Study Plan
+Week 1 leans toward learning, Weeks 2–4 toward building, Week 5 toward testing, hardening and delivery.
+
+Week
+Focus
+Outcome
+1
+Java, OOP, SOLID, data & tooling
+Modern Java confident, SOLID understood, Git and GitHub set up, schema designed.
+2
+Spring Boot core & persistence
+Layered REST service over PostgreSQL with validation, error handling and first tests.
+3
+Spring Security & JWT
+Review point 1 — User & Authentication Service complete with JWT and RBAC.
+4
+Candidate Management
+CV upload, parsing, search, tagging, application status.
+5
+Testing, hardening & delivery
+Review point 2 — test suite, CI, containerisation, documentation, tagged release, presentation.
+
+Testing is not Week 5
+Week 5 is where testing goes deep — Testcontainers, integration coverage, CI gates. It is not where testing starts.
+From Week 2 onward, every piece of work carries its own unit and slice tests as part of the Definition of Done. Arriving at Week 5 with an untested codebase means Week 5 becomes a salvage operation instead of a hardening one.
+Week 1 — Java, Object-Oriented Design, Data Fundamentals and Tooling
+Theme: Get the foundations solid before touching a framework. Everything after this assumes them.
+By the end of this week you can:
+Work confidently in modern Java: streams, Optional, generics, records, sealed types, pattern matching.
+Explain how the JVM manages memory, and make informed choices between collection types.
+State the five SOLID principles and give an example of each from code you have written.
+Design a normalised relational schema and explain what an index does and costs.
+Use Git confidently: feature branches, atomic commits, rebase, conflict resolution, pull requests.
+Read a Java stack trace top-down and identify the originating line.
+Topics to cover
+Modern Java: records, sealed interfaces, pattern matching for switch, text blocks, var, and the parts of the language that changed after Java 8.
+Streams and Optional properly — including when a for-loop is the clearer choice, because overusing streams is as common a problem as underusing them.
+Generics, wildcards, and why type erasure occasionally surprises you.
+Collections in depth: the real cost of ArrayList vs. LinkedList vs. HashMap, and choosing by access pattern rather than habit.
+Performance-relevant Java: JVM memory model, garbage collection at a conceptual level, string handling, boxing costs, and an introduction to concurrency.
+Object-oriented design in Java: encapsulation, composition over inheritance, interfaces vs. abstract classes, and immutability as a default.
+The SOLID principles — see Section 4.5. Cover these properly now; every week after this assumes them.
+Database fundamentals: relational modelling, normalisation to third normal form, primary and foreign keys, indexes, transactions and ACID.
+SQL: joins, aggregation, subqueries, and reading a query plan at a basic level.
+Git: branching strategy, rebase vs. merge, conflict resolution, review etiquette, and recovering a repository you have broken.
+GitHub: issues, pull requests, branch protection, and an introduction to Actions.
+Maven: lifecycle phases, dependency scopes, the wrapper, reading a dependency tree.
+IntelliJ: the debugger with breakpoints and watches, refactoring shortcuts, run configurations, the HTTP client.
+Watch — LinkedIn Learning
+Course
+Scope
+Link
+Learning Java 17
+Full
+linkedin.com/learning/learning-java-17
+Java Object-Oriented Programming
+Full
+linkedin.com/learning/java-object-oriented-programming-2
+Learning SOLID Programming Principles
+Full
+linkedin.com/learning/learning-solid-programming-principles
+Programming Foundations: Databases
+Full
+linkedin.com/learning/programming-foundations-databases-2
+Git Essential Training
+Full
+linkedin.com/learning/git-essential-training-25677984
+
+Read
+Effective Java (Bloch, 3rd ed.) — Items 1–20. Static factories, builders, immutability, composition over inheritance. The highest-value Java reading there is.
+Sections 4.5 and 4.6 of this document. Read them properly now rather than skimming; they are referenced in every week that follows.
+Pro Git, chapters 2 and 3 (free at git-scm.com/book). Branching and merging.
+Use The Index, Luke (use-the-index-luke.com) — chapters 1 and 2, on how indexes actually work.
+Conventional Commits (conventionalcommits.org) — ten minutes, and it will shape every commit you write from here.
+Build — pushed to GitHub by the end of the week
+A GitHub repository set up as described in Section 3.1, with branch protection active.
+A small Java exercise set demonstrating streams, Optional, records and a custom exception hierarchy — committed, not just run locally.
+The database schema for the platform, as an ERD plus the SQL to create it, with your normalisation decisions written down.
+The project broken into GitHub issues.
+Ten or more meaningful commits with conventional messages, including at least one resolved merge conflict.
+
+Self-check — you should be able to answer these without looking anything up
+When would you use a record rather than a class, and what do you give up?
+Which SOLID principle is Spring's dependency injection an application of, and what would your code look like without it?
+You add an index to speed up a query. What did it cost you?
+Given a stack trace 40 lines long, where do you look first?
+
+Week 2 — Spring Boot Core and Data Persistence
+Theme: A REST service is a set of layers with clear responsibilities — not a controller with everything in it.
+By the end of this week you can:
+Build a layered service: controller, service, repository, with DTOs at the boundary and entities never crossing it.
+Design RESTful resources and pick correct verbs and status codes.
+Validate input with Bean Validation and return a consistent, useful error body.
+Handle exceptions globally with @RestControllerAdvice rather than try/catch in controllers.
+Map JPA relationships, explain lazy vs. eager loading, and identify an N+1 problem from the SQL log.
+Write unit and slice tests for the code you just wrote, in the same pull request.
+Justify your layering in terms of single responsibility and dependency inversion.
+Topics to cover
+Dependency injection in depth: constructor injection as the default, bean scopes, the application context lifecycle, and why a circular dependency is a design signal rather than a config problem.
+What @SpringBootApplication expands into, and how auto-configuration decides what to wire.
+SOLID applied to layering: each layer has one responsibility, services depend on repository interfaces rather than implementations, and a fat controller is a single-responsibility violation you can see with the naked eye.
+REST design: resource naming, idempotency, pagination, filtering, versioning, and the real difference between 400, 401, 403, 404, 409 and 422.
+DTO mapping, and why exposing JPA entities from a controller causes production incidents.
+Spring Data JPA: repositories, derived queries, @Query, projections, pagination and sorting.
+Relationships: @OneToMany, @ManyToOne, @ManyToMany, cascade types, orphan removal.
+The N+1 problem — turn on SQL logging, watch it happen, fix it with a fetch join and an @EntityGraph.
+Flyway: baseline migration, versioned changes, and why nobody edits an applied migration.
+Transactions: @Transactional, propagation, and the self-invocation trap — which is the proxy pattern from Section 4.6 showing through.
+Creational patterns in practice: Factory and Builder, and where each earns its place in a DTO or a domain object with many optional fields.
+Configuration: profiles, @ConfigurationProperties, environment variables, keeping secrets out of the repository.
+Testing basics, starting now: JUnit 5 and Mockito on the service layer, @WebMvcTest with MockMvc on controllers.
+Watch — LinkedIn Learning
+Course
+Scope
+Link
+Spring Boot 3 Essential Training
+Full
+linkedin.com/learning/spring-boot-3-essential-training
+Spring: Framework in Depth
+DI & context modules
+linkedin.com/learning/spring-framework-in-depth-2
+Programming Foundations: Design Patterns
+Full
+linkedin.com/learning/programming-foundations-design-patterns-2
+
+Read
+Spring Boot reference documentation — "Getting Started", "Web" and "Data" chapters. Bookmark this; you will live in it for five weeks.
+Spring Data JPA reference documentation — reference chapters 1–5.
+Flyway documentation — "Concepts" and "Migrations".
+Head First Design Patterns — the Strategy and Factory chapters. Unusually readable for the subject.
+Richardson Maturity Model (Martin Fowler's article) — twenty minutes, and it will sharpen how you think about API design.
+Build — pushed to GitHub by the end of the week
+Project skeleton: well-structured packages, Docker Compose with PostgreSQL, Flyway baseline migration matching the Week 1 schema.
+Full CRUD for the Job entity — create, publish, list with pagination, update, close.
+A global exception handler returning a consistent problem-details error body.
+Unit and slice tests for everything built this week.
+A short design note in the repository explaining your package structure and why you chose it.
+
+Self-check — you should be able to answer these without looking anything up
+Why should a JPA entity never be returned directly from a controller?
+You list 100 jobs and see 101 SQL queries in the log. What is happening and what are two ways to fix it?
+Why does calling this.someTransactionalMethod() from inside the same class not start a transaction?
+Your service class is 600 lines. Which SOLID principle is it breaking, and how would you split it?
+
+Week 3 — Spring Security and JWT Authentication
+Theme: Review point 1. Security is not a library you add at the end — it is a filter chain you understand.
+By the end of this week you can:
+Draw the Spring Security filter chain from memory and say what each major filter does.
+Distinguish authentication from authorisation, and Principal from Authentication from SecurityContext.
+Configure a SecurityFilterChain bean using the modern lambda DSL.
+Hash and verify passwords correctly with BCrypt, and explain why hashing is not encryption.
+Issue, sign, parse and validate a JWT, and defend every design choice in it.
+Implement role-based access control at both route and method level, and choose correctly between them.
+Describe any security control you have added in terms of the specific threat it stops.
+Topics to cover
+The filter chain, traced in the debugger. Put a breakpoint in the chain and step through one authenticated request end to end. This single exercise is worth more than any amount of reading.
+The filter chain as the chain-of-responsibility pattern, and AuthenticationProvider as the strategy pattern. Naming what the framework is doing turns it from magic into something you can predict.
+Core abstractions: AuthenticationManager, AuthenticationProvider, UserDetailsService, UserDetails, GrantedAuthority, SecurityContextHolder.
+Password storage: BCrypt work factor, salting, DelegatingPasswordEncoder, and the migration path when an algorithm ages out.
+A custom UserDetailsService backed by your users table.
+JWT in depth: header, payload, signature; HS256 vs. RS256 and when asymmetric signing matters; claims design; expiry; and why a signed token is readable by anyone holding it.
+Writing a JWT authentication filter and registering it at the correct position in the chain.
+Refresh tokens: rotation, reuse detection, revocation, and what logout actually means in a stateless system.
+RBAC design for ADMIN, HR and INTERVIEWER — and least privilege, when it would be easier to give HR everything.
+Route-level rules with requestMatchers and hasRole; method-level with @PreAuthorize and SpEL. Where each belongs and why.
+CORS and CSRF, and why a stateless JWT API treats CSRF differently from a session-cookie application.
+Deliberate misconfiguration: expose an endpoint you should not, leak a stack trace, issue a 30-day token — then find and fix all three.
+Audit logging for authentication events: who logged in, when, from where, and what failed.
+OAuth2 concepts, as learning rather than implementation: resource owner, client, authorisation server and resource server; authorisation code with PKCE; client credentials; and how OIDC layers identity on top. You are implementing your own JWT issuance rather than delegating to an authorisation server, but you should be able to explain what you would change if identity moved to an external provider — and configuring Spring Security as an OAuth2 resource server is a worthwhile afternoon if the week allows.
+Threat modelling your own API against the OWASP API Security Top 10.
+Watch — LinkedIn Learning
+Course
+Scope
+Link
+Spring: Spring Security
+Chapters 1–5 — core, JWT, authorisation
+linkedin.com/learning/spring-spring-security-15832928
+Secure Coding in Java
+Authentication & authorisation modules
+linkedin.com/learning/secure-coding-in-java-2020
+Complete Guide to Java Design Patterns
+Chain of Responsibility, Strategy
+linkedin.com/learning/complete-guide-to-java-design-patterns-creational-behavioral-and-structural
+
+Read
+Spring Security reference documentation — the "Architecture" chapter. Read the filter chain section three times; it will not land the first time and that is normal.
+Spring Security reference — "Authentication" and "Authorization", servlet sections.
+OWASP API Security Top 10 — read all ten, then map each onto your own endpoints. The most valuable two hours of reading in this plan.
+OWASP Cheat Sheet Series — Authentication, Password Storage, JSON Web Token for Java, and Authorization.
+jwt.io — the introduction page, then decode one of your own tokens by hand.
+Spring Security reference — the "OAuth2 Resource Server" chapter, for the concepts even if you do not implement it.
+RFC 6749 sections 1 and 4, the OAuth2 framework. Dense, but reading one real RFC is worth doing once.
+Build — pushed to GitHub by the end of the week
+REVIEW POINT 1 — User & Authentication Service complete and passing every acceptance criterion in Section 7.1.
+Registration and login with BCrypt password hashing.
+JWT issued on login and validated on every protected request, with refresh token rotation.
+Route- and method-level RBAC across all three roles, with tests proving an INTERVIEWER cannot reach HR-only endpoints.
+A security model document in the repository: a diagram, plus a table mapping each threat to the control that addresses it.
+
+Self-check — you should be able to answer these without looking anything up
+Name the filters a request passes through, in order, on the way to a secured controller method.
+Why is BCrypt preferred over SHA-256 for passwords, given SHA-256 is also a hash?
+What stops a user editing their own JWT to add ROLE_ADMIN?
+When do you enforce a rule with requestMatchers, and when with @PreAuthorize?
+Your company moves identity to an external OAuth2 provider. What in your service changes, and what stays?
+
+Week 4 — Candidate Management Service
+Theme: The messy realities: files, unstructured data, concurrency and search.
+By the end of this week you can:
+Handle multipart file upload safely — type validation, size limits, filename sanitisation.
+Extract text from PDF and DOCX files and pull structured fields out of it.
+Process a bulk upload asynchronously without blocking the request thread.
+Build dynamic multi-criteria search with JPA Specifications, never string concatenation.
+Model a many-to-many tagging relationship and query across it efficiently.
+Reason about thread safety and shared state in a Spring service.
+Topics to cover
+File handling: MultipartFile, size and type constraints, storing the file while keeping only a reference in the database, and why the original filename is untrusted input.
+Text extraction with Apache PDFBox and Apache POI. CV parsing is genuinely hard and every commercial product gets it partly wrong — expect imperfection and measure it rather than hiding it.
+Parsing heuristics: regex for email, phone and years of experience, and skills matched against a controlled vocabulary.
+Design the parser properly: a CvParser strategy interface with one implementation per format, selected at runtime. Adding a third format should mean adding a class, not editing an if/else. Wrap PDFBox and POI behind your own adapter interfaces so a library swap touches one file.
+Concurrency and asynchronous processing: @Async with a bounded executor, thread pools, and why a singleton bean with mutable state is a race condition waiting to happen.
+Job status tracking so the caller can poll bulk upload progress.
+Dynamic queries with Specifications; composing predicates; building optional filters correctly. This is the specification pattern from Section 4.6.
+Pagination and sorting at scale, and why OFFSET gets slow.
+Tagging: many-to-many modelling, tag normalisation, searching by tag combination.
+Data protection: CVs are personal data. Lawful basis, retention and right to erasure, and what each means concretely for your schema and your delete endpoint.
+Watch — LinkedIn Learning
+Course
+Scope
+Link
+Java Advanced Concepts for High-Performance Development
+Concurrency, memory & collections modules
+linkedin.com/learning/java-advanced-concepts-for-high-performance-development
+Complete Guide to Java Design Patterns
+Adapter, Strategy, Decorator
+linkedin.com/learning/complete-guide-to-java-design-patterns-creational-behavioral-and-structural
+Spring Data JPA topic hub
+Specifications & dynamic queries
+linkedin.com/learning/topics/spring-data-jpa
+
+Read
+Spring Boot reference — "Multipart" and file upload configuration.
+Spring Data JPA reference — the "Specifications" and "Query by Example" sections.
+Apache PDFBox and Apache POI quick-start guides.
+Use The Index, Luke — chapters 4–6, on sorting, grouping and partial results.
+GDPR Articles 5, 6 and 17 in plain-English summary form. You are handling real people's CVs; knowing the obligations is part of the job.
+Build — pushed to GitHub by the end of the week
+Single and bulk CV upload with validation, processed asynchronously.
+CV parsing extracting name, email, phone, skills and years of experience — with accuracy measured over a test set of at least 20 CVs and reported honestly, failures included.
+Candidate search by skill, tag, status and free text, paginated.
+Tagging endpoints, and application status tracking against a job.
+A deletion endpoint that genuinely removes personal data, with a written note on retention.
+Tests for all of the above, written alongside the code rather than after it.
+
+Self-check — you should be able to answer these without looking anything up
+A user uploads a file named "../../etc/passwd.pdf". What happens in your code?
+Why is a Specification safer than building the WHERE clause as a string?
+A fourth CV format is requested. How many existing files do you have to modify, and what does your answer say about your design?
+Your parser gets 70% of CVs right. Is that a failure? What would you tell a stakeholder?
+
+Week 5 — Testing, Hardening, Containerisation and Delivery
+Theme: Review point 2. No new features — ship what exists, properly.
+By the end of this week you can:
+Write integration tests against real PostgreSQL with Testcontainers.
+Test secured endpoints with @WithMockUser and with a real token flow.
+Read a coverage report critically and spot where coverage is misleading.
+Configure GitHub Actions to block a merge when the build or tests fail.
+Package and run the whole system with a single command.
+Run a structured security review against the OWASP API Security Top 10.
+Present technical work to an audience that did not write the code.
+Topics to cover
+Feature freeze from day one of this week. Anything unfinished becomes a documented known limitation rather than a rush job. The instinct to keep adding features in the final week is exactly the instinct this week corrects.
+The testing pyramid, and what goes wrong when it inverts into an ice-cream cone.
+Filling gaps in unit and slice coverage from Weeks 2–4 — assuming those weeks were done properly, this is topping up rather than starting.
+Testcontainers: real PostgreSQL per test class, container reuse, and keeping the suite fast enough that people actually run it.
+Security testing: @WithMockUser, custom role annotations, and end-to-end tests exercising the real JWT flow.
+Test data builders — the builder pattern applied to test setup, because fixtures rot faster than production code.
+Testability as a design signal: code that is hard to unit-test almost always has a dependency-inversion problem. When a test needs six mocks, that is feedback about the class, not about testing.
+JaCoCo coverage, a realistic 70–80% target on business logic, and why coverage is a signal rather than a goal.
+GitHub Actions: build, test and coverage on every pull request, with a failing workflow blocking merge.
+Containerisation: multi-stage Dockerfile, layered JARs, non-root user, image size. Compose bringing up application and PostgreSQL together.
+Observability: Spring Boot Actuator, custom health indicators, Micrometer metrics, and structured JSON logging with a correlation ID threaded through every request so one user journey can be traced end to end.
+Performance sanity check: load the search endpoint with a few thousand candidate records, read the query plans with EXPLAIN, and add the indexes the data asks for.
+Environment and secret handling across dev, test and production profiles.
+Security review against the OWASP API Security Top 10, with findings logged as GitHub issues and the critical ones fixed. Dependency vulnerability scan; upgrade or document every finding.
+Final cleanup: remove dead code, resolve every TODO or convert it into an issue, make naming consistent.
+Documentation: README, architecture overview with diagrams, ERD, Swagger UI, setup guide, and an explicit list of known limitations with what you would do next given two more weeks.
+Bonus work, only if everything above is genuinely finished — see Section 7.4.
+Watch — LinkedIn Learning
+Course
+Scope
+Link
+Extending, Securing and Dockerizing Spring Boot Microservices
+Testing & Docker modules
+linkedin.com/learning/extending-securing-and-dockerizing-spring-boot-microservices
+Spring: Test-Driven Development with JUnit
+Full
+linkedin.com/learning/topics/spring-3
+Secure Coding in Java
+Remaining modules
+linkedin.com/learning/secure-coding-in-java-2020
+
+Read
+Spring Boot reference — the "Testing" chapter, in full. It is long and it is worth it.
+Testcontainers documentation — "Quickstart" and the JUnit 5 and PostgreSQL modules.
+Spring Boot reference — the "Actuator" chapter and the "Container Images" section.
+Docker documentation — multi-stage builds, and the Compose file reference.
+Micrometer documentation — concepts and meter types.
+PostgreSQL documentation — "Using EXPLAIN".
+OWASP API Security Top 10 — second pass, this time as an audit checklist against your own code.
+The Twelve-Factor App (12factor.net). Short, opinionated, and it will change how you think about configuration.
+Build — pushed to GitHub by the end of the week
+REVIEW POINT 2 — the full submission as described in Section 7.
+Test suite reaching at least 70% line coverage on service-layer code, including at least five Testcontainers-backed integration tests.
+A green GitHub Actions workflow enforced on the main branch.
+A single docker compose up that brings the whole system live on a clean machine.
+Complete documentation set in the repository, including known limitations.
+Security review report with findings and remediation status.
+A tagged v1.0 release on GitHub, and a 20-minute presentation plus 10 minutes of questions.
+
+Self-check — you should be able to answer these without looking anything up
+What does @WebMvcTest load, and what does it deliberately not load?
+Your coverage is 85% but a bug reached the demo. How is that possible?
+Why run tests against PostgreSQL in a container rather than H2?
+Point at one place where you used a design pattern and one where you deliberately did not. Can you justify both?
+What is a correlation ID and what problem does it solve at 3am?
+
+7. Capstone Project Specification
+Build a backend platform supporting the recruitment lifecycle: job creation and publishing, candidate sourcing and tracking, and application status. The deliverable is a secure, tested, documented REST API in a GitHub repository. No frontend is required; Swagger UI is the interface.
+
+Component
+Status
+Scope
+User & Authentication
+Required
+Identity, RBAC, JWT authentication with refresh token rotation.
+Candidate Management
+Required
+CV upload and parsing, candidate profiles, tagging, search, application status.
+LDAP integration
+Bonus
+A second authentication provider backed by a directory, with group-to-role mapping.
+Application Tracking
+Bonus
+Stage transitions, audit log, recruiter and interviewer assignment, feedback and scoring.
+
+A single application with clean internal service boundaries is expected and correct at this scale. Splitting it into separately deployable services is out of scope for five weeks — recognising when not to distribute is a more valuable thing to learn than building a distributed system badly.
+7.1 User & Authentication Service (Required)
+Functional requirements
+Registration and login for HR, Interviewer and Admin roles.
+Role-based access control enforced at both route and method level.
+JWT access token generation and validation, with refresh token rotation.
+User profile management and administrative user listing.
+Password change, requiring the old password.
+Audit log of authentication events.
+Acceptance criteria
+Passwords are stored only as BCrypt hashes. No endpoint, log line or error response ever returns one.
+Access tokens expire in 15 minutes or less; refresh tokens rotate on use and old ones are invalidated.
+An unauthenticated request to a protected endpoint returns 401; an authenticated request without the required role returns 403. The distinction is correct everywhere.
+An INTERVIEWER cannot reach any HR-only or ADMIN-only endpoint, verified by automated test.
+A tampered or expired token is rejected with a clear error that leaks nothing.
+No secrets appear in the repository; all are externalised to environment variables.
+Every endpoint is documented in OpenAPI with accurate request and response schemas.
+7.2 Candidate Management Service (Required)
+Functional requirements
+Single and bulk CV upload, accepting PDF and DOCX.
+CV parsing extracting at minimum name, email, phone, skills and years of experience.
+Candidate profile CRUD, with the CV file retained and downloadable.
+Free-text and structured search across name, skill, tag and status, with pagination and sorting.
+Tagging: create, assign, remove, and search by tag combination.
+Job creation, publishing and closing.
+Candidate application to a job, with status tracking.
+Candidate deletion that genuinely removes personal data.
+Acceptance criteria
+Bulk upload of 20 CVs completes without blocking the request thread, and job progress is queryable.
+Parsing accuracy is measured over a documented test set of at least 20 real-format CVs and reported honestly, including the failures.
+Uploads are validated for MIME type and size; a renamed executable is rejected.
+Search returns correct results across every combination of filters and is paginated.
+No search query is built by string concatenation.
+Listing 1,000 candidates issues a bounded number of SQL queries — the N+1 problem is demonstrably absent, shown with SQL logging on.
+Only HR and ADMIN can create or delete candidates; INTERVIEWER has read access only.
+Deleting a candidate removes the stored CV file as well as the database row.
+7.3 Cross-cutting requirements
+These apply to the whole submission.
+
+Area
+Requirement
+Architecture
+Clear layering. No business logic in controllers, no JPA entities crossing the API boundary.
+Security
+Every endpoint deliberately secured. No endpoint is public by accident.
+Data
+Flyway migrations for all schema. ddl-auto set to validate. Sensible indexes on searched columns.
+Errors
+A consistent error response shape across the whole API. No stack traces reach the client.
+Testing
+70% or higher line coverage on service-layer code, plus integration tests on critical paths.
+Documentation
+README, architecture overview, ERD, live Swagger UI, and a stated list of known limitations — all in the repository.
+Runnability
+docker compose up brings the whole system live on a clean machine with no manual steps.
+Repository
+Meaningful commit history, pull requests for all work, no secrets committed, no commented-out code blocks, no unresolved TODOs, tagged v1.0 release.
+7.4 Bonus work
+Attempt only once both required services meet every acceptance criterion above. Half-finished bonus work counts for less than none.
+
+LDAP integration
+Understanding directory-backed authentication is genuinely worth having — in most enterprises corporate identity lives in Active Directory and the application owns only authorisation.
+Scope: stand up OpenLDAP in Docker or use embedded UnboundID with seeded users and groups; add an LDAP AuthenticationProvider alongside the existing database provider; map directory groups onto application authorities.
+The reason this is achievable as an add-on rather than a rewrite is that AuthenticationProvider is a strategy interface — this is the open/closed principle paying off in a way you can point at.
+Material: Spring Security reference, "LDAP Authentication" chapter; and the LDAP chapters of Spring: Spring Security on LinkedIn Learning.
+
+Application Tracking Service
+Move a candidate through stages — Applied → Screening → Interview → Offer → Hired, with Rejected and Withdrawn as terminal states — enforcing legal transitions in the domain rather than the controller. This is the state pattern.
+Append-only audit log recording actor, timestamp, from-state and to-state. An audit trail you can UPDATE is not an audit trail.
+Recruiter and interviewer assignment, with authorisation that depends on assignment rather than role alone — a natural use for @PreAuthorize with SpEL against the domain object.
+Interview feedback with structured scoring across weighted criteria, and an aggregate result.
+Spring application events to decouple side effects from the transition logic — the observer pattern, and the open/closed principle again.
+7.5 Final presentation
+Twenty minutes plus ten minutes of questions, to an audience that includes at least one non-engineer.
+Problem and scope: what was built, and what was deliberately left out (3 min).
+Architecture walkthrough with a diagram (4 min).
+Live demo of the working system (7 min).
+Security model: the controls, and the threats they address (3 min).
+What went wrong, what was learned, what you would do differently (3 min).
+Questions (10 min).
+
+Be straight in the "what went wrong" section
+That section matters, and it is usually where the strongest answers come from. "My first schema design forced me into a painful migration in Week 4, and here is what I would do differently" shows exactly the reflective capacity that predicts a good engineer.
+Claiming everything went smoothly reads as either not paying attention or not being straight with the audience. This is said in advance so nobody plays it safe.
+8. Full Resource Library
+Everything referenced in the weekly plans, collected in one place.
+8.1 LinkedIn Learning
+Course titles and availability change over time. If something here has been retired, use the topic hubs at the bottom of the table to find the current equivalent.
+
+Course
+Week
+Link
+Learning Java 17
+1
+linkedin.com/learning/learning-java-17
+Java Object-Oriented Programming
+1
+linkedin.com/learning/java-object-oriented-programming-2
+Learning SOLID Programming Principles
+1
+linkedin.com/learning/learning-solid-programming-principles
+Programming Foundations: Databases
+1
+linkedin.com/learning/programming-foundations-databases-2
+Git Essential Training
+1
+linkedin.com/learning/git-essential-training-25677984
+Spring Boot 3 Essential Training
+2
+linkedin.com/learning/spring-boot-3-essential-training
+Spring: Framework in Depth
+2
+linkedin.com/learning/spring-framework-in-depth-2
+Programming Foundations: Design Patterns
+2
+linkedin.com/learning/programming-foundations-design-patterns-2
+Spring: Spring Security
+3, bonus
+linkedin.com/learning/spring-spring-security-15832928
+Secure Coding in Java
+3, 5
+linkedin.com/learning/secure-coding-in-java-2020
+Complete Guide to Java Design Patterns
+3, 4
+linkedin.com/learning/complete-guide-to-java-design-patterns-creational-behavioral-and-structural
+Java Advanced Concepts for High-Performance Development
+4
+linkedin.com/learning/java-advanced-concepts-for-high-performance-development
+Extending, Securing and Dockerizing Spring Boot Microservices
+5
+linkedin.com/learning/extending-securing-and-dockerizing-spring-boot-microservices
+Topic hub — Spring
+any
+linkedin.com/learning/topics/spring-3
+Topic hub — Spring Boot
+any
+linkedin.com/learning/topics/spring-boot
+Topic hub — Spring Data JPA
+any
+linkedin.com/learning/topics/spring-data-jpa
+Topic hub — Software Design
+any
+linkedin.com/learning/topics/software-design
+Topic hub — Git
+any
+linkedin.com/learning/topics/git
+
+Where several courses covered the same ground, only one has been kept. Git Essential Training replaces the other Git courses; Spring Boot 3 Essential Training replaces the other introductory Spring courses; Complete Guide to Java Design Patterns replaces the separate creational, structural and behavioural titles; and Java Object-Oriented Programming replaces the language-agnostic object-oriented design course. The list above is the whole of what needs watching.
+8.2 Primary documentation
+These are the sources of truth. Going here first, rather than to a search engine, is the habit that separates engineers who get unstuck quickly from those who do not.
+Topic
+Reference
+Spring Boot
+docs.spring.io/spring-boot/reference — Getting Started, Web, Data, Testing, Actuator.
+Spring Security
+docs.spring.io/spring-security/reference — Architecture, Authentication, Authorization, and LDAP for the bonus work.
+Spring Data JPA
+docs.spring.io/spring-data/jpa/reference — repositories, Specifications, projections.
+Guides
+spring.io/guides — short, focused, hands-on.
+Flyway
+documentation.red-gate.com/flyway — Concepts and Migrations.
+Testcontainers
+testcontainers.com/getting-started — JUnit 5 and PostgreSQL modules.
+Docker
+docs.docker.com — multi-stage builds, Compose file reference.
+GitHub Actions
+docs.github.com/actions — workflow syntax and the Java with Maven starter workflow.
+PostgreSQL
+postgresql.org/docs — Indexes, and Using EXPLAIN.
+8.3 Books
+Title
+Use it for
+Effective Java — Joshua Bloch, 3rd edition
+Items 1–20 cover most of what matters here. The single highest-value Java book there is.
+Head First Design Patterns — Freeman & Robson, 2nd edition
+The best first patterns book there is. Strategy, Observer, Decorator, Factory and Adapter map directly onto Weeks 2–5.
+Refactoring — Martin Fowler, 2nd edition
+How to get from code that works to code that is well designed. The catalogue of code smells is the practical companion to SOLID.
+Clean Architecture — Robert C. Martin
+Intuition for layering and dependency direction, and the fullest treatment of the SOLID principles.
+Design Patterns — Gamma, Helm, Johnson, Vlissides
+The original catalogue. Dense and dated in style — a reference to look things up in, not a book to read front to back.
+Pro Git — Chacon & Straub (free at git-scm.com/book)
+Chapters 2 and 3 on branching and merging.
+8.4 Security references
+Resource
+Use it for
+OWASP API Security Top 10
+The most valuable security reading in this plan. Read it in Week 3 and audit against it in Week 5.
+OWASP Cheat Sheet Series
+Authentication, Authorization, Password Storage, JWT for Java, REST Security.
+OWASP Application Security Verification Standard
+Level 1 requirements as a Week 5 checklist.
+jwt.io
+Decode and inspect your own tokens by hand.
+8.5 Other references
+Resource
+Use it for
+Use The Index, Luke — use-the-index-luke.com
+Indexing and query performance. Chapters 1–6.
+Refactoring Guru — refactoring.guru
+Clear, diagram-heavy explanations of every pattern in Section 4.6, with Java examples. The fastest way to look one up.
+The Twelve-Factor App — 12factor.net
+Configuration, environment parity, and how to think about deployment.
+Martin Fowler's bliki — martinfowler.com
+The Test Pyramid, Mocks Aren't Stubs, the Richardson Maturity Model, and the Specification pattern.
+Conventional Commits — conventionalcommits.org
+Ten minutes that will improve every commit message you write.
+
+
+End of plan.
