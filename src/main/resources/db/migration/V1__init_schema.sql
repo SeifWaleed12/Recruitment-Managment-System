@@ -3,8 +3,8 @@
 
 -- 1. ROLES TABLE
 CREATE TABLE roles (
-    id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL UNIQUE
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name text NOT NULL UNIQUE
 );
 
 INSERT INTO roles (name) VALUES 
@@ -14,12 +14,12 @@ INSERT INTO roles (name) VALUES
 
 -- 2. USERS TABLE (One Role to Many Users)
 CREATE TABLE users (
-    id BIGSERIAL PRIMARY KEY,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
-    role_id BIGINT NOT NULL REFERENCES roles(id),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email text NOT NULL UNIQUE,
+    password_hash text NOT NULL,
+    first_name text NOT NULL,
+    last_name text NOT NULL,
+    role_id UUID NOT NULL REFERENCES roles(id),
     enabled BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -28,22 +28,21 @@ CREATE TABLE users (
 -- 3. REFRESH_TOKENS TABLE
 CREATE TABLE refresh_tokens (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id BIGINT NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
-    token_hash VARCHAR(255) NOT NULL UNIQUE,
+    user_id UUID NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+    token_hash text NOT NULL UNIQUE,
     expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
-    replaced_by_id UUID REFERENCES refresh_tokens(id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 4. JOBS TABLE
 CREATE TABLE jobs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    title VARCHAR(255) NOT NULL,
+    title text NOT NULL,
     description TEXT NOT NULL,
-    department VARCHAR(100) NOT NULL,
-    location VARCHAR(100) NOT NULL,
-    status VARCHAR(50) NOT NULL DEFAULT 'DRAFT',
-    created_by_id BIGINT NOT NULL REFERENCES users(id),
+    department text NOT NULL,
+    location text NOT NULL,
+    status text NOT NULL DEFAULT 'DRAFT',
+    created_by_id UUID NOT NULL REFERENCES users(id),
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -51,43 +50,42 @@ CREATE TABLE jobs (
 -- 5. CANDIDATES TABLE
 CREATE TABLE candidates (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    phone VARCHAR(50),
+    first_name text NOT NULL,
+    last_name text NOT NULL,
+    email text NOT NULL UNIQUE,
+    phone text,
     years_of_experience INT DEFAULT 0,
-    cv_file_path VARCHAR(512),
-    cv_original_filename VARCHAR(255),
-    cv_file_type VARCHAR(100),
-    created_by_id BIGINT REFERENCES users(id) ON DELETE SET NULL,
+    cv_file_path text,
+    cv_original_filename text,
+    cv_file_type text,
+    created_by_id UUID REFERENCES users(id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 6. SKILLS TABLE (Normalized Skill Entities)
 CREATE TABLE skills (
-    id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name text NOT NULL UNIQUE
 );
 
 -- 7. CANDIDATE_SKILLS JOIN TABLE (Many-To-Many Relationship)
 CREATE TABLE candidate_skills (
     candidate_id UUID NOT NULL REFERENCES candidates(id) ON DELETE CASCADE,
-    skill_id BIGINT NOT NULL REFERENCES skills(id) ON DELETE CASCADE,
+    skill_id UUID NOT NULL REFERENCES skills(id) ON DELETE CASCADE,
     PRIMARY KEY (candidate_id, skill_id)
 );
 
 -- 8. TAGS TABLE
 CREATE TABLE tags (
-    id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE,
-    color_code VARCHAR(10) DEFAULT '#000000'
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name text NOT NULL UNIQUE
 );
 
 -- 9. CANDIDATE_TAGS JOIN TABLE
 CREATE TABLE candidate_tags (
     candidate_id UUID NOT NULL REFERENCES candidates(id) ON DELETE CASCADE,
-    tag_id BIGINT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
+    tag_id UUID NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
     PRIMARY KEY (candidate_id, tag_id)
 );
 
@@ -96,8 +94,8 @@ CREATE TABLE applications (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     candidate_id UUID NOT NULL REFERENCES candidates(id) ON DELETE CASCADE,
     job_id UUID NOT NULL REFERENCES jobs(id) ON DELETE CASCADE,
-    status VARCHAR(50) NOT NULL DEFAULT 'APPLIED',
-    assigned_recruiter_id BIGINT REFERENCES users(id) ON DELETE SET NULL,
+    status text NOT NULL DEFAULT 'APPLIED',
+    assigned_recruiter_id UUID REFERENCES users(id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT uk_candidate_job UNIQUE (candidate_id, job_id)
@@ -107,7 +105,7 @@ CREATE TABLE applications (
 CREATE TABLE application_assignments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     application_id UUID NOT NULL REFERENCES applications(id) ON DELETE CASCADE,
-    interviewer_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    interviewer_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     assigned_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT uk_app_interviewer UNIQUE (application_id, interviewer_id)
 );
@@ -116,7 +114,7 @@ CREATE TABLE application_assignments (
 CREATE TABLE interview_feedbacks (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     application_id UUID NOT NULL REFERENCES applications(id) ON DELETE CASCADE,
-    interviewer_id BIGINT NOT NULL REFERENCES users(id),
+    interviewer_id UUID NOT NULL REFERENCES users(id),
     overall_score NUMERIC(3, 2) NOT NULL,
     comments TEXT,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -125,14 +123,13 @@ CREATE TABLE interview_feedbacks (
 -- 13. AUDIT_LOGS TABLE (Append-Only)
 CREATE TABLE audit_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    event_type VARCHAR(100) NOT NULL,
-    actor_id BIGINT REFERENCES users(id) ON DELETE SET NULL,
-    entity_type VARCHAR(100),
-    entity_id VARCHAR(255),
-    from_state VARCHAR(50),
-    to_state VARCHAR(50),
+    event_type text NOT NULL,
+    actor_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    entity_type text,
+    entity_id text,
+    from_state text,
+    to_state text,
     details TEXT,
-    ip_address VARCHAR(45),
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
