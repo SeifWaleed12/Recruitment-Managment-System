@@ -1,6 +1,7 @@
 package com.banquemisr.recruitment.mapper;
 
 import com.banquemisr.recruitment.data.entity.JobEntity;
+import com.banquemisr.recruitment.data.entity.UserEntity;
 import com.banquemisr.recruitment.web.DTOs.request.JobRequest;
 import com.banquemisr.recruitment.web.DTOs.respond.JobRespond;
 import org.springframework.stereotype.Component;
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JobMapper {
 
-    public JobEntity toEntity(JobRequest request) {
+    public JobEntity toEntity(JobRequest request, UserEntity creator) {
         if (request == null) return null;
         return JobEntity.builder()
                 .title(request.getTitle())
