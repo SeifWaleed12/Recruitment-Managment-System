@@ -44,6 +44,13 @@ app:
     max-pool-size: 20
     queue-capacity: 100
     thread-name-prefix: cv-bulk-async-
+#LDAP
+
+  ldap:
+    urls: ldap://localhost:389
+    base: dc=example,dc=com
+    username: cn=admin,dc=example,dc=com
+    password: admin
 
 # Actuator Health & Metrics Endpoints
 management:
