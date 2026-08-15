@@ -55,4 +55,32 @@ public class CandidateController {
     public void deleteCandidate(@PathVariable(name = "id") String candidateId) {
         this.candidateService.deleteCandidate(candidateId);
     }
+
+    @PostMapping("/{candidateId}/skills/{skillId}")
+    public CandidateRespond assignSkill(
+            @PathVariable(name= "candidateId") String candidateId,
+            @PathVariable(name= "skillId") String skillId){
+        return this.candidateService.assignSkill(candidateId,skillId);
+    }
+
+    @DeleteMapping("/{candidateId}/skills/{skillId}")
+    public CandidateRespond removeSkill(
+            @PathVariable(name= "candidateId") String candidateId,
+            @PathVariable(name= "skillId") String skillId){
+        return this.candidateService.removeSkill(candidateId,skillId);
+    }
+
+    @PostMapping("/{candidateId}/tags/{tagId}")
+    public CandidateRespond assignTag(
+            @PathVariable(name= "candidateId") String candidateId,
+            @PathVariable(name= "tagId") String tagId){
+        return this.candidateService.assignTag(candidateId,tagId);
+    }
+
+    @DeleteMapping("/{candidateId}/tags/{tagId}")
+    public CandidateRespond removeTag(
+            @PathVariable(name= "candidateId") String candidateId,
+            @PathVariable(name= "tagId") String tagId){
+        return this.candidateService.removeTag(candidateId,tagId);
+    }
 }

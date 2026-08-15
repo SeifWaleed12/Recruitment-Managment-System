@@ -4,10 +4,17 @@ import com.banquemisr.recruitment.data.entity.CandidateEntity;
 import com.banquemisr.recruitment.data.entity.UserEntity;
 import com.banquemisr.recruitment.web.DTOs.request.CandidateRequest;
 import com.banquemisr.recruitment.web.DTOs.respond.CandidateRespond;
+import com.banquemisr.recruitment.web.DTOs.respond.SkillRespond;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.stream.Collectors;
+
 @Component
+@RequiredArgsConstructor
 public class CandidateMapper {
+
+    private final TagMapper tagMapper;
 
     public CandidateEntity toEntity(CandidateRequest request, UserEntity creator) {
         if (request == null) return null;
@@ -45,6 +52,16 @@ public class CandidateMapper {
                 .cvFileType(entity.getCvFileType())
                 .createdByUserId(entity.getCreatedBy() != null ? entity.getCreatedBy().getUserId() : null)
                 .createdByUserName(creatorName)
+                .skills(entity.getSkills().stream()
+                        .map(s -> SkillRespond.builder()
+                                .id(s.getSkillId())
+                                .name(s.getName())
+                                .build())
+                        .collect(Collectors.toSet()))
+                .tags(entity.getTags().stream()
+                        .map(tagMapper::toRespond)
+                        .collect(Collectors.toSet()))
                 .build();
+
     }
 }

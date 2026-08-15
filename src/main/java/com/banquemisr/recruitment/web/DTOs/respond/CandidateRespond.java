@@ -3,6 +3,8 @@ package com.banquemisr.recruitment.web.DTOs.respond;
 
 import lombok.*;
 
+import java.util.Set;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,5 +24,7 @@ public class CandidateRespond {
     private String cvFileType;
     private String createdByUserId;
     private String createdByUserName;
+    private Set<SkillRespond> skills;
+    private Set<TagRespond> tags;
 
 }

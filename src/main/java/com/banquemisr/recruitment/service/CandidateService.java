@@ -1,8 +1,12 @@
 package com.banquemisr.recruitment.service;
 
 import com.banquemisr.recruitment.data.entity.CandidateEntity;
+import com.banquemisr.recruitment.data.entity.SkillEntity;
+import com.banquemisr.recruitment.data.entity.TagEntity;
 import com.banquemisr.recruitment.data.entity.UserEntity;
 import com.banquemisr.recruitment.data.repo.CandidateRepo;
+import com.banquemisr.recruitment.data.repo.SkillRepo;
+import com.banquemisr.recruitment.data.repo.TagRepo;
 import com.banquemisr.recruitment.exception.DuplicateResourceException;
 import com.banquemisr.recruitment.exception.ResourceNotFoundException;
 import com.banquemisr.recruitment.mapper.CandidateMapper;
@@ -23,6 +27,8 @@ public class CandidateService {
     private final CandidateRepo candidateRepo;
     private final UserService userService;
     private final CandidateMapper candidateMapper;
+    private final SkillRepo skillRepo;
+    private final TagRepo tagRepo;
 
     /**
      * CV Upload & Parsing Hook Method
@@ -114,5 +120,37 @@ public class CandidateService {
             throw new ResourceNotFoundException("Candidate not found with ID: " + candidateId);
         }
         candidateRepo.deleteById(candidateId);
+    }
+
+    @Transactional
+    public CandidateRespond assignSkill(String candidateId, String skillId){
+        CandidateEntity candidate= getCandidateEntityById(candidateId);
+        SkillEntity skill= skillRepo.findById(skillId)
+                .orElseThrow(() -> new ResourceNotFoundException("Skill not found with ID "+ skillId));
+        candidate.getSkills().add(skill);
+        return candidateMapper.toRespond(candidateRepo.save(candidate));
+    }
+
+    @Transactional
+    public CandidateRespond removeSkill(String candidateId, String skillId){
+        CandidateEntity candidate= getCandidateEntityById(candidateId);
+        candidate.getSkills().removeIf(s -> s.getSkillId().equals(skillId));
+        return candidateMapper.toRespond(candidateRepo.save(candidate));
+    }
+
+    @Transactional
+    public CandidateRespond assignTag(String candidateID, String tagId){
+        CandidateEntity candidate= getCandidateEntityById(candidateID);
+        TagEntity tag= tagRepo.findById(tagId)
+                .orElseThrow(() -> new ResourceNotFoundException("Tag not found with ID: "+ tagId));
+        candidate.getTags().add(tag);
+        return candidateMapper.toRespond(candidateRepo.save(candidate));
+    }
+
+    @Transactional
+    public CandidateRespond removeTag(String candidateId, String tagId){
+        CandidateEntity candidate= getCandidateEntityById(candidateId);
+        candidate.getTags().removeIf(t ->t.getTagId().equals(tagId));
+        return candidateMapper.toRespond(candidateRepo.save(candidate));
     }
 }
