@@ -46,4 +46,9 @@ public class TagService {
                 .build();
     }
 
+    public TagEntity getTagEntityById(String id) {
+        return tagRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tag not found with ID: " + id));
+    }
+
 }
