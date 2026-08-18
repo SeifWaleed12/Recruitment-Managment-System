@@ -1,5 +1,6 @@
 package com.banquemisr.recruitment.web.controller;
 
+import com.banquemisr.recruitment.cvparsing.model.BulkUploadProgressRespond;
 import com.banquemisr.recruitment.service.CandidateService;
 import com.banquemisr.recruitment.web.DTOs.request.CandidateRequest;
 import com.banquemisr.recruitment.web.DTOs.respond.CandidateRespond;
@@ -29,12 +30,35 @@ public class CandidateController {
         return this.candidateService.getCandidateById(candidateId);
     }
 
+    /**
+     * Single CV Upload & In-Memory Parsing Endpoint (Accepts PDF and DOCX).
+     */
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public CandidateRespond uploadAndParseCv(
             @RequestParam("file") MultipartFile file,
             @RequestParam(name = "createdByUserId", required = false) String createdByUserId) {
         return this.candidateService.parseAndSaveCandidate(file, createdByUserId);
+    }
+
+    /**
+     * Bulk CV Upload Endpoint (Accepts up to 20 PDF and DOCX files).
+     * Processes asynchronously in-memory and returns a trackable job ID.
+     */
+    @PostMapping(value = "/bulk-upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public BulkUploadProgressRespond bulkUploadCvs(
+            @RequestParam("files") List<MultipartFile> files,
+            @RequestParam(name = "createdByUserId", required = false) String createdByUserId) {
+        return this.candidateService.startBulkCvUpload(files, createdByUserId);
+    }
+
+    /**
+     * Poll status of an asynchronous bulk CV upload job.
+     */
+    @GetMapping("/bulk-upload/{jobId}/status")
+    public BulkUploadProgressRespond getBulkUploadStatus(@PathVariable("jobId") String jobId) {
+        return this.candidateService.getBulkUploadProgress(jobId);
     }
 
     @PostMapping

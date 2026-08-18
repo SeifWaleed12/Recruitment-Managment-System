@@ -1,6 +1,5 @@
 package com.banquemisr.recruitment.service;
 
-
 import com.banquemisr.recruitment.data.entity.ApplicationEntity;
 import com.banquemisr.recruitment.data.entity.CandidateEntity;
 import com.banquemisr.recruitment.data.entity.JobEntity;
@@ -12,12 +11,15 @@ import com.banquemisr.recruitment.exception.ResourceNotFoundException;
 import com.banquemisr.recruitment.mapper.ApplicationMapper;
 import com.banquemisr.recruitment.web.DTOs.request.ApplicationRequest;
 import com.banquemisr.recruitment.web.DTOs.respond.ApplicationRespond;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ApplicationService {
 
     private final ApplicationRepo applicationRepo;
@@ -26,14 +28,7 @@ public class ApplicationService {
     private final UserService userService;
     private final ApplicationMapper applicationMapper;
 
-    public ApplicationService(ApplicationRepo applicationRepo, CandidateService candidateService, JobService jobService, UserService userService, ApplicationMapper applicationMapper) {
-        this.applicationRepo = applicationRepo;
-        this.candidateService = candidateService;
-        this.jobService = jobService;
-        this.userService = userService;
-        this.applicationMapper = applicationMapper;
-    }
-
+    @Transactional
     public ApplicationRespond createApplication(ApplicationRequest request) {
         // 1. Fetch Candidate Entity via CandidateService
         CandidateEntity candidate = candidateService.getCandidateEntityById(request.getCandidateId());
@@ -45,7 +40,7 @@ public class ApplicationService {
         }
         // 4. Fetch optional Recruiter User Entity via UserService
         UserEntity recruiter = null;
-        if (request.getAssignedRecruiterId() != null) {
+        if (request.getAssignedRecruiterId() != null && !request.getAssignedRecruiterId().isBlank()) {
             recruiter = userService.getUserEntityById(request.getAssignedRecruiterId());
         }
         if (request.getStatus() == null) {
@@ -56,24 +51,28 @@ public class ApplicationService {
         return applicationMapper.toRespond(savedEntity);
     }
 
+    @Transactional(readOnly = true)
     public ApplicationRespond getApplicationById(String applicationId) {
         ApplicationEntity entity = applicationRepo.findById(applicationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found with ID: " + applicationId));
         return applicationMapper.toRespond(entity);
     }
 
+    @Transactional(readOnly = true)
     public List<ApplicationRespond> getApplicationsByJobId(String jobId) {
         return applicationRepo.findByJobJobId(jobId).stream()
                 .map(applicationMapper::toRespond)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<ApplicationRespond> getApplicationsByCandidateId(String candidateId) {
         return applicationRepo.findByCandidateCandidateId(candidateId).stream()
                 .map(applicationMapper::toRespond)
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public ApplicationRespond updateApplicationStatus(String applicationId, ApplicationStatus status) {
         ApplicationEntity entity = applicationRepo.findById(applicationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found with ID: " + applicationId));
@@ -82,6 +81,7 @@ public class ApplicationService {
         return applicationMapper.toRespond(updatedEntity);
     }
 
+    @Transactional
     public ApplicationRespond assignRecruiter(String applicationId, String recruiterUserId) {
         ApplicationEntity entity = applicationRepo.findById(applicationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found with ID: " + applicationId));
@@ -92,11 +92,11 @@ public class ApplicationService {
         return applicationMapper.toRespond(updatedEntity);
     }
 
+    @Transactional
     public void deleteApplication(String applicationId) {
         if (!applicationRepo.existsById(applicationId)) {
             throw new ResourceNotFoundException("Application not found with ID: " + applicationId);
         }
         applicationRepo.deleteById(applicationId);
     }
-
 }
