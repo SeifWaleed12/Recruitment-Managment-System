@@ -5,6 +5,8 @@ import com.banquemisr.recruitment.data.entity.SkillEntity;
 import com.banquemisr.recruitment.data.entity.UserEntity;
 import com.banquemisr.recruitment.web.DTOs.request.CandidateRequest;
 import com.banquemisr.recruitment.web.DTOs.respond.CandidateRespond;
+import com.banquemisr.recruitment.web.DTOs.respond.SkillRespond;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -12,7 +14,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class CandidateMapper {
+
+    private final TagMapper tagMapper;
 
     public CandidateEntity toEntity(CandidateRequest request, UserEntity creator) {
         if (request == null) return null;
@@ -59,5 +64,6 @@ public class CandidateMapper {
                 .createdByUserName(creatorName)
                 .skills(skillNames)
                 .build();
+
     }
 }
