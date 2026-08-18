@@ -43,7 +43,7 @@ public class PasswordResetService {
         String userId = parts[2];
 
         UserEntity user = userRepo.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found");
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         user.setUserPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepo.save(user);
