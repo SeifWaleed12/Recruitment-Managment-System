@@ -1,5 +1,7 @@
 package com.banquemisr.recruitment.service;
 
+import com.banquemisr.recruitment.Authentication.Security.JwtService;
+import com.banquemisr.recruitment.Authentication.Security.Property.JwtProperties;
 import com.banquemisr.recruitment.data.entity.RoleEntity;
 import com.banquemisr.recruitment.data.entity.UserEntity;
 import com.banquemisr.recruitment.data.repo.UserRepo;
@@ -22,9 +24,9 @@ public class SignUpService {
     private final RoleService roleService;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-
-    @Value("${app.jwt.access-token-expiration-ms:300000}")
-    private long accessTokenExpirationMs;
+    private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
+    private final JwtProperties jwtProperties;
 
     @Transactional
     public AuthResponse signup(SignUpRequest request) {
@@ -49,12 +51,14 @@ public class SignUpService {
                 .build();
 
         UserEntity savedUser = userRepo.save(user);
+        String accessToken= jwtService.generateAccessToken(savedUser);
+        String refreshToken= refreshTokenService.createRefreshToken(savedUser);
         UserRespond userRespond = userMapper.toRespond(savedUser);
 
         return AuthResponse.builder()
                 .accessToken("mock-access-token-" + savedUser.getUserId())
                 .refreshToken("mock-refresh-token-" + savedUser.getUserId())
-                .expiresInMs(accessTokenExpirationMs)
+                .expiresInMs(jwtProperties.getAccessTokenExpirationMs())
                 .user(userRespond)
                 .build();
     }

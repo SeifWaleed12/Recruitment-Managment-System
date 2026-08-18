@@ -1,6 +1,7 @@
 package com.banquemisr.recruitment.service;
 
 import com.banquemisr.recruitment.Authentication.Security.JwtService;
+import com.banquemisr.recruitment.Authentication.Security.Property.JwtProperties;
 import com.banquemisr.recruitment.data.entity.UserEntity;
 import com.banquemisr.recruitment.data.repo.UserRepo;
 import com.banquemisr.recruitment.mapper.UserMapper;
@@ -23,11 +24,11 @@ public class LoginService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
+    private final JwtProperties jwtProperties;
 
-    @Value("${app.jwt.access-token-expiration-ms:300000}")
-    private long accessTokenExpirationMs;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public AuthResponse login(LoginRequest request) {
         UserEntity user = userRepo.findByUserEmail(request.getEmail())
                 .orElseThrow(() -> new BadCredentialsException("Invalid credentials"));
@@ -40,12 +41,14 @@ public class LoginService {
             throw new BadCredentialsException("Invalid credentials");
         }
 
+        String accessToken= jwtService.generateAccessToken(user);
+        String refreshToken= refreshTokenService.createRefreshToken(user);
         UserRespond userRespond = userMapper.toRespond(user);
 
         return AuthResponse.builder()
-                .accessToken("mock-access-token-" + user.getUserId())
-                .refreshToken("mock-refresh-token-" + user.getUserId())
-                .expiresInMs(accessTokenExpirationMs)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .expiresInMs(jwtProperties.getAccessTokenExpirationMs())
                 .user(userRespond)
                 .build();
     }

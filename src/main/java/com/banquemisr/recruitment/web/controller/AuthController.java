@@ -2,11 +2,9 @@ package com.banquemisr.recruitment.web.controller;
 
 import com.banquemisr.recruitment.service.LoginService;
 import com.banquemisr.recruitment.service.PasswordResetService;
+import com.banquemisr.recruitment.service.RefreshTokenService;
 import com.banquemisr.recruitment.service.SignUpService;
-import com.banquemisr.recruitment.web.DTOs.request.ForgotPasswordRequest;
-import com.banquemisr.recruitment.web.DTOs.request.LoginRequest;
-import com.banquemisr.recruitment.web.DTOs.request.ResetPasswordRequest;
-import com.banquemisr.recruitment.web.DTOs.request.SignUpRequest;
+import com.banquemisr.recruitment.web.DTOs.request.*;
 import com.banquemisr.recruitment.web.DTOs.respond.AuthResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +19,7 @@ public class AuthController {
     private final SignUpService signUpService;
     private final LoginService loginService;
     private final PasswordResetService passwordResetService;
+    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
@@ -43,5 +42,10 @@ public class AuthController {
     @ResponseStatus(HttpStatus.OK)
     public void resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         this.passwordResetService.resetPassword(request);
+    }
+
+    @PostMapping("/refresh")
+    public AuthResponse refresh(@Valid @RequestBody RefreshTokenRequest request){
+        return this.refreshTokenService.refreshAccessToken(request.getRefreshToken());
     }
 }
