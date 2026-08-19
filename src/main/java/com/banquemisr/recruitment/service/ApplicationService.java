@@ -73,10 +73,10 @@ public class ApplicationService {
     }
 
     @Transactional
-    public ApplicationRespond updateApplicationStatus(String applicationId, ApplicationStatus status) {
-        ApplicationEntity entity = applicationRepo.findById(applicationId)
+    public ApplicationRespond transitionStatus(String applicationId, ApplicationStatus newStatus){
+        ApplicationEntity entity= applicationRepo.findById(applicationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found with ID: " + applicationId));
-        entity.setStatus(status);
+        entity.transitionTo(newStatus);
         ApplicationEntity updatedEntity = applicationRepo.save(entity);
         return applicationMapper.toRespond(updatedEntity);
     }
