@@ -1,6 +1,7 @@
 package com.banquemisr.recruitment.mapper;
 
 import com.banquemisr.recruitment.data.entity.CandidateEntity;
+import com.banquemisr.recruitment.data.entity.SkillEntity;
 import com.banquemisr.recruitment.data.entity.UserEntity;
 import com.banquemisr.recruitment.web.DTOs.request.CandidateRequest;
 import com.banquemisr.recruitment.web.DTOs.respond.CandidateRespond;
@@ -8,6 +9,8 @@ import com.banquemisr.recruitment.web.DTOs.respond.SkillRespond;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -39,6 +42,13 @@ public class CandidateMapper {
             creatorName = entity.getCreatedBy().getUserFname() + " " + entity.getCreatedBy().getUserLname();
         }
 
+        Set<String> skillNames = Collections.emptySet();
+        if (entity.getSkills() != null && !entity.getSkills().isEmpty()) {
+            skillNames = entity.getSkills().stream()
+                    .map(SkillEntity::getName)
+                    .collect(Collectors.toSet());
+        }
+
         return CandidateRespond.builder()
                 .candidateId(entity.getCandidateId())
                 .firstName(entity.getFirstName())
@@ -52,15 +62,7 @@ public class CandidateMapper {
                 .cvFileType(entity.getCvFileType())
                 .createdByUserId(entity.getCreatedBy() != null ? entity.getCreatedBy().getUserId() : null)
                 .createdByUserName(creatorName)
-                .skills(entity.getSkills().stream()
-                        .map(s -> SkillRespond.builder()
-                                .id(s.getSkillId())
-                                .name(s.getName())
-                                .build())
-                        .collect(Collectors.toSet()))
-                .tags(entity.getTags().stream()
-                        .map(tagMapper::toRespond)
-                        .collect(Collectors.toSet()))
+                .skills(skillNames)
                 .build();
 
     }

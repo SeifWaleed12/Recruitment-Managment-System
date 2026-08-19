@@ -29,56 +29,68 @@ public class RefreshTokenService {
     private final UserMapper userMapper;
 
     @Transactional
-    public String createRefreshToken(UserEntity user){
+    public AuthResponse issueTokens(UserEntity user) {
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = this.createRefreshToken(user);
 
-        refreshTokenRepo.deleteByUser(user); // to make sure only one active token per user
-
-        String rawToken= generateRawToken();
-        RefreshTokenEntity entity= RefreshTokenEntity.builder()
-                .user(user)
-                .tokenHash(hashToken(rawToken))
-                .expiresAt(Instant.now().plusMillis(jwtProperties.getRefreshTokenExpirationMs()))
+        return AuthResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .expiresInMs(jwtProperties.getAccessTokenExpirationMs())
+                .user(userMapper.toRespond(user))
                 .build();
+    }
+
+    @Transactional
+    public String createRefreshToken(UserEntity user) {
+        String rawToken = generateRawToken();
+        Instant expiresAt = Instant.now().plusMillis(jwtProperties.getRefreshTokenExpirationMs());
+        String tokenHash = hashToken(rawToken);
+
+        RefreshTokenEntity entity = refreshTokenRepo.findByUser(user)
+                .map(existing -> {
+                    existing.setTokenHash(tokenHash);
+                    existing.setExpiresAt(expiresAt);
+                    return existing;
+                })
+                .orElseGet(() -> RefreshTokenEntity.builder()
+                        .user(user)
+                        .tokenHash(tokenHash)
+                        .expiresAt(expiresAt)
+                        .build());
 
         refreshTokenRepo.save(entity);
         return rawToken;
     }
 
     @Transactional
-    public AuthResponse refreshAccessToken(String rawRefreshToken){
-        RefreshTokenEntity stored= refreshTokenRepo.findByTokenHash(hashToken(rawRefreshToken))
+    public AuthResponse refreshAccessToken(String rawRefreshToken) {
+        RefreshTokenEntity stored = refreshTokenRepo.findByTokenHash(hashToken(rawRefreshToken))
                 .orElseThrow(() -> new BadCredentialsException("Invalid refresh token"));
 
-        if(stored.getExpiresAt().isBefore(Instant.now())){
+        if (stored.getExpiresAt().isBefore(Instant.now())) {
             refreshTokenRepo.delete(stored);
             throw new BadCredentialsException("Refresh token expired");
         }
 
-        UserEntity user= stored.getUser();
-        String newAccessToken= jwtService.generateAccessToken(user);
-        String newRefreshToken= createRefreshToken(user);
-        return AuthResponse.builder()
-                .accessToken(newAccessToken)
-                .refreshToken(newRefreshToken)
-                .expiresInMs(jwtProperties.getAccessTokenExpirationMs())
-                .user(userMapper.toRespond(user))
-                .build();
+        UserEntity user = stored.getUser();
+        return this.issueTokens(user);
     }
 
-    public void revokeAllForUser(UserEntity user){
+    public void revokeAllForUser(UserEntity user) {
         refreshTokenRepo.deleteByUser(user); // for logout
     }
 
-    private String generateRawToken(){
+    private String generateRawToken() {
         return UUID.randomUUID().toString() + UUID.randomUUID().toString();
     }
 
-    private String hashToken(String rawToken){
+    private String hashToken(String rawToken) {
         try {
-            MessageDigest digest= MessageDigest.getInstance("SHA-256");
-            byte[] hash= digest.digest(rawToken.getBytes(StandardCharsets.UTF_8));
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(rawToken.getBytes(StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(hash);
-        }catch (NoSuchAlgorithmException e){
+        } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("SHA-256 not available", e);
         }
     }

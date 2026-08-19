@@ -25,5 +25,6 @@ public class TagEntity {
     private String name;
 
     @ManyToMany(mappedBy = "tags")
-    private Set<CandidateEntity> candidates= new HashSet<>();
+    @Builder.Default
+    private Set<CandidateEntity> candidates = new HashSet<>();
 }

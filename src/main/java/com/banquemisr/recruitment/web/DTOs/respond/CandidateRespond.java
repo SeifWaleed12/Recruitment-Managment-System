@@ -24,7 +24,6 @@ public class CandidateRespond {
     private String cvFileType;
     private String createdByUserId;
     private String createdByUserName;
-    private Set<SkillRespond> skills;
-    private Set<TagRespond> tags;
+    private Set<String> skills;
 
 }

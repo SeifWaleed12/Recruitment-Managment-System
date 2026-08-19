@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @Component
-@ConfigurationProperties(prefix = "Ldap")
+@ConfigurationProperties(prefix = "ldap")
 public class LdapProperties {
 
     private String urls;

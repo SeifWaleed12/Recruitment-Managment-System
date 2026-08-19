@@ -32,6 +32,11 @@ public class AuthController {
         return this.loginService.login(request);
     }
 
+    @PostMapping("/refresh")
+    public AuthResponse refresh(@RequestParam(name = "refreshToken") String refreshToken) {
+        return this.refreshTokenService.refreshAccessToken(refreshToken);
+    }
+
     @PostMapping("/forgot-password")
     @ResponseStatus(HttpStatus.OK)
     public void forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {

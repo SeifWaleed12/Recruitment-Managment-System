@@ -30,12 +30,17 @@ public class PasswordResetService {
 
     @Transactional
     public void resetPassword(ResetPasswordRequest request) {
-        if (!request.getToken().startsWith("reset-")) {
+        if (request.getToken() == null || !request.getToken().startsWith("reset-")) {
             throw new IllegalArgumentException("Invalid or expired password reset token");
         }
 
-        String[] parts = request.getToken().split("-");
-        String userId = parts[parts.length - 1];
+        // Split with limit 3: ["reset", timestamp, full_uuid]
+        // This prevents UUID hyphens from breaking the user ID
+        String[] parts = request.getToken().split("-", 3);
+        if (parts.length < 3) {
+            throw new IllegalArgumentException("Malformed password reset token");
+        }
+        String userId = parts[2];
 
         UserEntity user = userRepo.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));

@@ -18,4 +18,4 @@ if not exist %JAVACMD% (
   set JAVACMD=java
 )
 
-%JAVACMD% -jar %MAVEN_WRAPPER_JAR% %*
+"%JAVACMD%" "-Dmaven.multiModuleProjectDirectory=%MAVEN_PROJECTBASEDIR%" -cp %MAVEN_WRAPPER_JAR% org.apache.maven.wrapper.MavenWrapperMain %*
