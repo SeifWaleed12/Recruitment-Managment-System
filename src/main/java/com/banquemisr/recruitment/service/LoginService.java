@@ -7,9 +7,11 @@ import com.banquemisr.recruitment.web.DTOs.request.LoginRequest;
 import com.banquemisr.recruitment.web.DTOs.respond.AuthResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,13 +26,17 @@ public class LoginService {
 
     @Transactional
     public AuthResponse login(LoginRequest request) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+        Authentication authentication;
+        try {
+            authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+            );
+        } catch (AuthenticationException ex) {
+            throw new BadCredentialsException("Invalid credentials");
+        }
 
-        String email = request.getEmail();
-        UserEntity user = userRepo.findByUserEmail(email)
-                .orElseGet(() -> syncLdapUserToDatabase(authentication, email));
+        UserEntity user = userRepo.findByUserEmail(request.getEmail())
+                .orElseGet(() -> syncLdapUserToDatabase(authentication, request.getEmail()));
 
         if (user.getEnabled() != null && !user.getEnabled()) {
             throw new DisabledException("Account is disabled");
@@ -55,7 +61,7 @@ public class LoginService {
 
         String firstName = "LDAP";
         String lastName = "User";
-        if (email.contains("@")) {
+        if (email != null && email.contains("@")) {
             String namePart = email.substring(0, email.indexOf('@'));
             if (namePart.contains(".")) {
                 String[] parts = namePart.split("\\.");
@@ -68,7 +74,6 @@ public class LoginService {
 
         UserEntity newUser = UserEntity.builder()
                 .userEmail(email)
-                .userPassword("{LDAP}")
                 .userFname(firstName)
                 .userLname(lastName)
                 .role(role)

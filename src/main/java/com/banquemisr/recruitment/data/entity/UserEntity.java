@@ -32,11 +32,11 @@ public class UserEntity {
     @Column(name = "email", nullable = false, unique = true)
     private String userEmail;
 
-    @Column(name = "password_hash", nullable = false)
-    private String userPassword;
+   // @Column(name = "password_hash", nullable = false)
+   // private String userPassword;
 
     @Column(name = "first_name", nullable = false)
-    private String userFname;
+   private String userFname;
 
     @Column(name = "last_name", nullable = false)
     private String userLname;

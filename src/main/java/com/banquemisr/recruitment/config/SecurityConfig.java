@@ -1,27 +1,28 @@
 package com.banquemisr.recruitment.config;
 
-import com.banquemisr.recruitment.Authentication.Security.CustomUserDetailsService;
 import com.banquemisr.recruitment.Authentication.Security.JwtAuthenticationFilter;
 import com.banquemisr.recruitment.Authentication.Security.Property.LdapProperties;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.ldap.authentication.BindAuthenticator;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -30,12 +31,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.time.Instant;
 import java.util.List;
 
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.access.AccessDeniedHandler;
-
+/**
+ * Sole security configuration class for the application. Authentication is delegated
+ * entirely to LDAP (bind authentication) - there is no local UserDetailsService / DB
+ * password check. Because ldapAuthenticationProvider is the only AuthenticationProvider
+ * bean in the context, Spring Security automatically uses it to build the shared
+ * AuthenticationManager bean below.
+ */
 @Configuration
 @EnableMethodSecurity
 @EnableConfigurationProperties(LdapProperties.class)
@@ -51,20 +53,9 @@ public class SecurityConfig {
     private final LdapProperties ldapProperties;
 
     @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider(
-            CustomUserDetailsService userDetailsService,
-            PasswordEncoder passwordEncoder) {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder);
-        return provider;
-    }
-
-    @Bean
     public AuthenticationManager authenticationManager(
-            AuthenticationProvider ldapAuthenticationProvider,
-            DaoAuthenticationProvider daoAuthenticationProvider) {
-        return new ProviderManager(List.of(ldapAuthenticationProvider, daoAuthenticationProvider));
+            AuthenticationProvider ldapAuthenticationProvider) {
+        return new ProviderManager(List.of(ldapAuthenticationProvider));
     }
 
     @Bean
@@ -105,8 +96,8 @@ public class SecurityConfig {
 
         authenticator.setUserSearch(
                 new FilterBasedLdapUserSearch(
-                        "ou=people",
-                        "(|(mail={0})(uid={0}))",
+                        ldapProperties.getPeopleOu(),
+                        ldapProperties.getUserSearchFilter(),
                         contextSource
                 )
         );
@@ -151,7 +142,6 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
             AuthenticationProvider ldapAuthenticationProvider,
-            DaoAuthenticationProvider daoAuthenticationProvider,
             AuthenticationEntryPoint authenticationEntryPoint,
             AccessDeniedHandler accessDeniedHandler) throws Exception {
 
@@ -176,7 +166,6 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(ldapAuthenticationProvider)
-                .authenticationProvider(daoAuthenticationProvider)
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class

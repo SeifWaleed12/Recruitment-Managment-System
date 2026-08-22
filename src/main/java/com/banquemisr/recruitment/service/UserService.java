@@ -1,5 +1,6 @@
 package com.banquemisr.recruitment.service;
 
+import com.banquemisr.recruitment.Authentication.Security.LdapUserService;
 import com.banquemisr.recruitment.data.entity.UserEntity;
 import com.banquemisr.recruitment.data.enums.Role;
 import com.banquemisr.recruitment.data.repo.UserRepo;
@@ -9,7 +10,9 @@ import com.banquemisr.recruitment.mapper.UserMapper;
 import com.banquemisr.recruitment.web.DTOs.request.UserRequest;
 import com.banquemisr.recruitment.web.DTOs.respond.UserRespond;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +25,8 @@ public class UserService {
 
     private final UserRepo userRepo;
     private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
+    private final LdapUserService ldapUserService;
+    private final AuthenticationManager authenticationManager;
 
     @Transactional
     public UserRespond createUser(UserRequest request) {
@@ -51,9 +55,16 @@ public class UserService {
         }
 
         UserEntity entity = userMapper.toEntity(request, role);
-        entity.setUserPassword(passwordEncoder.encode(request.getUserPassword()));
-
         UserEntity savedEntity = userRepo.save(entity);
+
+        ldapUserService.createUser(
+                savedEntity.getUserEmail(),
+                savedEntity.getUserFname(),
+                savedEntity.getUserLname(),
+                savedEntity.getUserEmail(),
+                request.getUserPassword()
+        );
+
         return userMapper.toRespond(savedEntity);
     }
 
@@ -104,12 +115,14 @@ public class UserService {
     public void changePassword(String userId, String oldPassword, String newPassword) {
         UserEntity user = getUserEntityById(userId);
 
-        if (!passwordEncoder.matches(oldPassword, user.getUserPassword())) {
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(user.getUserEmail(), oldPassword));
+        } catch (AuthenticationException ex) {
             throw new IllegalArgumentException("Incorrect old password provided!");
         }
 
-        user.setUserPassword(passwordEncoder.encode(newPassword));
-        userRepo.save(user);
+        ldapUserService.updatePassword(user.getUserEmail(), newPassword);
     }
 
     @Transactional
@@ -122,9 +135,10 @@ public class UserService {
 
     @Transactional
     public void deleteUser(String userId) {
-        if (!userRepo.existsById(userId)) {
-            throw new ResourceNotFoundException("User not found with ID: " + userId);
-        }
+        UserEntity user = userRepo.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+
         userRepo.deleteById(userId);
+        ldapUserService.deleteUser(user.getUserEmail());
     }
 }

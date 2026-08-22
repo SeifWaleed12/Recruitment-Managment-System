@@ -1,12 +1,12 @@
 package com.banquemisr.recruitment.service;
 
+import com.banquemisr.recruitment.Authentication.Security.LdapUserService;
 import com.banquemisr.recruitment.data.entity.UserEntity;
 import com.banquemisr.recruitment.data.repo.UserRepo;
 import com.banquemisr.recruitment.exception.ResourceNotFoundException;
 import com.banquemisr.recruitment.web.DTOs.request.ForgotPasswordRequest;
 import com.banquemisr.recruitment.web.DTOs.request.ResetPasswordRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +16,7 @@ public class PasswordResetService {
 
     private final UserRepo userRepo;
     private final EmailService emailService;
-    private final PasswordEncoder passwordEncoder;
+    private final LdapUserService ldapUserService;
 
     @Transactional(readOnly = true)
     public void forgotPassword(ForgotPasswordRequest request) {
@@ -34,8 +34,7 @@ public class PasswordResetService {
             throw new IllegalArgumentException("Invalid or expired password reset token");
         }
 
-        // Split with limit 3: ["reset", timestamp, full_uuid]
-        // This prevents UUID hyphens from breaking the user ID
+
         String[] parts = request.getToken().split("-", 3);
         if (parts.length < 3) {
             throw new IllegalArgumentException("Malformed password reset token");
@@ -45,7 +44,6 @@ public class PasswordResetService {
         UserEntity user = userRepo.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        user.setUserPassword(passwordEncoder.encode(request.getNewPassword()));
-        userRepo.save(user);
+        ldapUserService.updatePassword(user.getUserEmail(), request.getNewPassword());
     }
 }
