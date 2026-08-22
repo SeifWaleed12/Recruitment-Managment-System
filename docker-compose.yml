@@ -28,5 +28,13 @@ services:
       - "389:389"
       - "636:636"
 
+  # Maildev Local SMTP Email Server (Web UI at http://localhost:1080)
+  maildev:
+    image: maildev/maildev:2.1.0
+    container_name: recruitment_maildev
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+
 volumes:
   postgres_data:
