@@ -115,7 +115,8 @@ CREATE TABLE interview_feedbacks (
     id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
     application_id VARCHAR(36) NOT NULL REFERENCES applications(id) ON DELETE CASCADE,
     interviewer_id VARCHAR(36) NOT NULL REFERENCES users(id),
-    overall_score NUMERIC(3, 2) NOT NULL,
+    interview_date TIMESTAMP WITH TIME ZONE NOT NULL,
+    overall_score NUMERIC(3, 2),
     comments TEXT,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
