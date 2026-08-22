@@ -8,17 +8,31 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     show-sql: true
     open-in-view: false
 
   flyway:
-    enabled: false
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  ldap:
+    embedded:
+      port: 8389
+      base-dn: dc=banquemisr,dc=com
+      ldif: classpath:users.ldif
 
 app:
   jwt:
     secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-    access-token-expiration-ms: 60000 # 1 min for fast testing
+    access-token-expiration-ms: 60000
     refresh-token-expiration-ms: 300000
   cv:
     storage-dir: ./target/test-uploads/cvs
+
+ldap:
+  urls: ldap://localhost:8389
+  base: dc=banquemisr,dc=com
+  username: cn=admin,dc=banquemisr,dc=com
+  password: adminpassword

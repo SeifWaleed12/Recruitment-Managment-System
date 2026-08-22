@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 @RestController
 @RequestMapping("/api/v1/applications")
 @RequiredArgsConstructor
@@ -20,26 +22,31 @@ public class ApplicationController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR')")
     public ApplicationRespond createApplication(@Valid @RequestBody ApplicationRequest applicationRequest) {
         return this.applicationService.createApplication(applicationRequest);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR', 'INTERVIEWER')")
     public ApplicationRespond getApplicationById(@PathVariable(name = "id") String applicationId) {
         return this.applicationService.getApplicationById(applicationId);
     }
 
     @GetMapping("/job/{jobId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR', 'INTERVIEWER')")
     public List<ApplicationRespond> getApplicationsByJobId(@PathVariable(name = "jobId") String jobId) {
         return this.applicationService.getApplicationsByJobId(jobId);
     }
 
     @GetMapping("/candidate/{candidateId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR', 'INTERVIEWER')")
     public List<ApplicationRespond> getApplicationsByCandidateId(@PathVariable(name = "candidateId") String candidateId) {
         return this.applicationService.getApplicationsByCandidateId(candidateId);
     }
 
     @PatchMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR')")
     public ApplicationRespond updateApplicationStatus(
             @PathVariable(name = "id") String applicationId,
             @RequestParam(name = "status") ApplicationStatus status) {
@@ -47,6 +54,7 @@ public class ApplicationController {
     }
 
     @PatchMapping("/{id}/assign")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR')")
     public ApplicationRespond assignRecruiter(
             @PathVariable(name = "id") String applicationId,
             @RequestParam(name = "recruiterUserId") String recruiterUserId) {
@@ -55,6 +63,7 @@ public class ApplicationController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR')")
     public void deleteApplication(@PathVariable(name = "id") String applicationId) {
         this.applicationService.deleteApplication(applicationId);
     }

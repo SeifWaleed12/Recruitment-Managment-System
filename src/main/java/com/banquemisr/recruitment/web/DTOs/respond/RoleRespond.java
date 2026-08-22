@@ -1,6 +1,7 @@
 package com.banquemisr.recruitment.web.DTOs.respond;
 
 
+import com.banquemisr.recruitment.data.enums.Role;
 import lombok.*;
 
 @Getter
@@ -10,7 +11,7 @@ import lombok.*;
 @Builder
 public class RoleRespond {
 
-    private String roleId;
+    private Role role;
     private String roleName;
 
 }

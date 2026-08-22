@@ -1,5 +1,6 @@
 package com.banquemisr.recruitment.config;
 
+import com.banquemisr.recruitment.Authentication.Security.CustomUserDetailsService;
 import com.banquemisr.recruitment.Authentication.Security.JwtAuthenticationFilter;
 import com.banquemisr.recruitment.Authentication.Security.Property.LdapProperties;
 import lombok.AllArgsConstructor;
@@ -10,10 +11,12 @@ import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.ldap.authentication.BindAuthenticator;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
@@ -24,7 +27,14 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.time.Instant;
 import java.util.List;
+
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.AccessDeniedHandler;
 
 @Configuration
 @EnableMethodSecurity
@@ -41,9 +51,20 @@ public class SecurityConfig {
     private final LdapProperties ldapProperties;
 
     @Bean
+    public DaoAuthenticationProvider daoAuthenticationProvider(
+            CustomUserDetailsService userDetailsService,
+            PasswordEncoder passwordEncoder) {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder);
+        return provider;
+    }
+
+    @Bean
     public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
+            AuthenticationProvider ldapAuthenticationProvider,
+            DaoAuthenticationProvider daoAuthenticationProvider) {
+        return new ProviderManager(List.of(ldapAuthenticationProvider, daoAuthenticationProvider));
     }
 
     @Bean
@@ -84,38 +105,78 @@ public class SecurityConfig {
 
         authenticator.setUserSearch(
                 new FilterBasedLdapUserSearch(
-                        "",
-                        "(uid={0})",
+                        "ou=people",
+                        "(|(mail={0})(uid={0}))",
                         contextSource
                 )
         );
 
         DefaultLdapAuthoritiesPopulator authorities =
-                new DefaultLdapAuthoritiesPopulator(contextSource, "");
+                new DefaultLdapAuthoritiesPopulator(contextSource, "ou=groups");
+        authorities.setGroupSearchFilter("(member={0})");
+        authorities.setRolePrefix("");
+        authorities.setSearchSubtree(true);
+        authorities.setConvertToUpperCase(true);
 
         return new LdapAuthenticationProvider(authenticator, authorities);
     }
 
     @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint() {
+        return (request, response, authException) -> {
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write(String.format(
+                    "{\"timestamp\":\"%s\",\"status\":401,\"error\":\"Unauthorized\",\"message\":\"%s\"}",
+                    Instant.now(),
+                    authException.getMessage() != null ? authException.getMessage() : "Full authentication is required to access this resource"
+            ));
+        };
+    }
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        return (request, response, accessDeniedException) -> {
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.getWriter().write(String.format(
+                    "{\"timestamp\":\"%s\",\"status\":403,\"error\":\"Forbidden\",\"message\":\"%s\"}",
+                    Instant.now(),
+                    "Access denied: You do not have permission to access this resource"
+            ));
+        };
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
-            AuthenticationProvider ldapAuthenticationProvider) throws Exception {
+            AuthenticationProvider ldapAuthenticationProvider,
+            DaoAuthenticationProvider daoAuthenticationProvider,
+            AuthenticationEntryPoint authenticationEntryPoint,
+            AccessDeniedHandler accessDeniedHandler) throws Exception {
 
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler)
+                )
                 .authorizeHttpRequests(auth -> auth
+                        // Public Endpoints
                         .requestMatchers(
                                 "/auth/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
-                                "/v3/api-docs/**"
+                                "/v3/api-docs/**",
+                                "/actuator/health"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(ldapAuthenticationProvider)
+                .authenticationProvider(daoAuthenticationProvider)
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class

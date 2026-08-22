@@ -25,8 +25,8 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
         List<SimpleGrantedAuthority> authorities = Collections.emptyList();
-        if (user.getRole() != null && user.getRole().getRoleName() != null) {
-            authorities = List.of(new SimpleGrantedAuthority(user.getRole().getRoleName()));
+        if (user.getRole() != null) {
+            authorities = List.of(new SimpleGrantedAuthority(user.getRole().name()));
         }
 
         return new User(
