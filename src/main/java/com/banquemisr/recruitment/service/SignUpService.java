@@ -1,5 +1,6 @@
 package com.banquemisr.recruitment.service;
 
+import com.banquemisr.recruitment.Authentication.Security.LdapUserService;
 import com.banquemisr.recruitment.data.entity.RoleEntity;
 import com.banquemisr.recruitment.data.entity.UserEntity;
 import com.banquemisr.recruitment.data.repo.UserRepo;
@@ -7,7 +8,6 @@ import com.banquemisr.recruitment.exception.DuplicateResourceException;
 import com.banquemisr.recruitment.web.DTOs.request.SignUpRequest;
 import com.banquemisr.recruitment.web.DTOs.respond.AuthResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +17,7 @@ public class SignUpService {
 
     private final UserRepo userRepo;
     private final RoleService roleService;
-    private final PasswordEncoder passwordEncoder;
+    private final LdapUserService ldapUserService;
     private final RefreshTokenService refreshTokenService;
 
     @Transactional
@@ -32,7 +32,6 @@ public class SignUpService {
 
         UserEntity user = UserEntity.builder()
                 .userEmail(request.getEmail())
-                .userPassword(passwordEncoder.encode(request.getPassword()))
                 .userFname(request.getFirstName())
                 .userLname(request.getLastName())
                 .role(role)
@@ -40,6 +39,15 @@ public class SignUpService {
                 .build();
 
         UserEntity savedUser = userRepo.save(user);
+
+
+        ldapUserService.createUser(
+                savedUser.getUserEmail(),
+                savedUser.getUserFname(),
+                savedUser.getUserLname(),
+                savedUser.getUserEmail(),
+                request.getPassword()
+        );
 
         return refreshTokenService.issueTokens(savedUser);
     }

@@ -13,7 +13,6 @@ public class UserMapper {
         if (request == null) return null;
         return UserEntity.builder()
                 .userEmail(request.getUserEmail())
-                .userPassword(request.getUserPassword())
                 .userFname(request.getUserFname())
                 .userLname(request.getUserLname())
                 .role(role)
