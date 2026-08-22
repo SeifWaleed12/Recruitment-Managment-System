@@ -1,13 +1,16 @@
 package com.banquemisr.recruitment.service;
 
 import com.banquemisr.recruitment.data.entity.UserEntity;
+import com.banquemisr.recruitment.data.enums.Role;
 import com.banquemisr.recruitment.data.repo.UserRepo;
 import com.banquemisr.recruitment.web.DTOs.request.LoginRequest;
 import com.banquemisr.recruitment.web.DTOs.respond.AuthResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,23 +18,70 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class LoginService {
 
+    private final AuthenticationManager authenticationManager;
     private final UserRepo userRepo;
-    private final PasswordEncoder passwordEncoder;
     private final RefreshTokenService refreshTokenService;
 
     @Transactional
     public AuthResponse login(LoginRequest request) {
-        UserEntity user = userRepo.findByUserEmail(request.getEmail())
-                .orElseThrow(() -> new BadCredentialsException("Invalid credentials"));
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
+
+        String email = request.getEmail();
+        UserEntity user = userRepo.findByUserEmail(email)
+                .orElseGet(() -> syncLdapUserToDatabase(authentication, email));
 
         if (user.getEnabled() != null && !user.getEnabled()) {
             throw new DisabledException("Account is disabled");
         }
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getUserPassword())) {
-            throw new BadCredentialsException("Invalid credentials");
+        return refreshTokenService.issueTokens(user);
+    }
+
+    private UserEntity syncLdapUserToDatabase(Authentication authentication, String email) {
+        String authority = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .filter(auth -> auth.startsWith("ROLE_"))
+                .findFirst()
+                .orElse("ROLE_HR");
+
+        Role role;
+        try {
+            role = Role.valueOf(authority.toUpperCase());
+        } catch (Exception e) {
+            role = Role.ROLE_HR;
         }
 
-        return refreshTokenService.issueTokens(user);
+        String firstName = "LDAP";
+        String lastName = "User";
+        if (email.contains("@")) {
+            String namePart = email.substring(0, email.indexOf('@'));
+            if (namePart.contains(".")) {
+                String[] parts = namePart.split("\\.");
+                firstName = capitalize(parts[0]);
+                lastName = capitalize(parts[1]);
+            } else {
+                firstName = capitalize(namePart);
+            }
+        }
+
+        UserEntity newUser = UserEntity.builder()
+                .userEmail(email)
+                .userPassword("{LDAP}")
+                .userFname(firstName)
+                .userLname(lastName)
+                .role(role)
+                .enabled(true)
+                .build();
+
+        return userRepo.save(newUser);
+    }
+
+    private String capitalize(String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
     }
 }

@@ -1,12 +1,9 @@
 package com.banquemisr.recruitment.web.controller;
 
-
 import com.banquemisr.recruitment.service.RoleService;
-import com.banquemisr.recruitment.web.DTOs.request.RoleRequest;
 import com.banquemisr.recruitment.web.DTOs.respond.RoleRespond;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,26 +11,18 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/roles")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class RoleController {
 
     private final RoleService roleService;
 
-
     @GetMapping
-    public List<RoleRespond> getAllRoles(){
+    public List<RoleRespond> getAllRoles() {
         return this.roleService.getAllRoles();
     }
 
-    @GetMapping("/{id}")
-    public RoleRespond getRoleById(@PathVariable(name="id") String id){
-        return this.roleService.getRoleById(id);
+    @GetMapping("/{name}")
+    public RoleRespond getRoleByName(@PathVariable(name = "name") String name) {
+        return this.roleService.getRoleByName(name);
     }
-
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public RoleRespond createRole(@Valid @RequestBody RoleRequest roleRequest){
-            return this.roleService.createRole(roleRequest);
-    }
-
-
 }

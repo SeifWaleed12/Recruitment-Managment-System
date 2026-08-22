@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 @RestController
 @RequestMapping("/api/v1/jobs")
 @RequiredArgsConstructor
@@ -19,8 +21,8 @@ public class JobController {
 
     private final JobService jobService;
 
-
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR', 'INTERVIEWER')")
     public List<JobRespond> getAllJobs(@RequestParam(name="status",required = false)JobStatus status){
         if (status != null) {
             return this.jobService.getJobsByStatus(status);
@@ -29,33 +31,34 @@ public class JobController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR', 'INTERVIEWER')")
     public JobRespond getJobById(@PathVariable(name="id") String jobId){
         return this.jobService.getJobById(jobId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public JobRespond createJob(@Valid@RequestBody JobRequest jobRequest){
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR')")
+    public JobRespond createJob(@Valid @RequestBody JobRequest jobRequest){
         return this.jobService.createJob(jobRequest);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR')")
     public JobRespond updateJob(@PathVariable(name ="id") String jobId, @Valid @RequestBody JobRequest jobRequest){
         return this.jobService.updateJob(jobId,jobRequest);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR')")
     public void deleteJob(@PathVariable(name = "id") String jobId){
         this.jobService.deleteJob(jobId);
     }
 
     @PatchMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR')")
     public JobRespond changeStatus(@PathVariable(name="id")String jobId,@RequestParam(name = "status") JobStatus status){
         return this.jobService.updateJobStatus(jobId,status);
     }
-
-
-
-
 }

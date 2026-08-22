@@ -21,7 +21,7 @@ public class JwtService {
     }
 
     public String generateAccessToken(UserEntity user) {
-        String role = (user.getRole() != null) ? user.getRole().getRoleName() : null;
+        String role = (user.getRole() != null) ? user.getRole().name() : null;
 
         return Jwts.builder()
                 .subject(user.getUserEmail())

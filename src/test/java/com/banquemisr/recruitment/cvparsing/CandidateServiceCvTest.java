@@ -11,6 +11,8 @@ import com.banquemisr.recruitment.data.repo.CandidateRepo;
 import com.banquemisr.recruitment.data.repo.SkillRepo;
 import com.banquemisr.recruitment.mapper.CandidateMapper;
 import com.banquemisr.recruitment.service.CandidateService;
+import com.banquemisr.recruitment.service.SkillService;
+import com.banquemisr.recruitment.service.TagService;
 import com.banquemisr.recruitment.service.UserService;
 import com.banquemisr.recruitment.web.DTOs.respond.CandidateRespond;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,6 +39,10 @@ class CandidateServiceCvTest {
     @Mock
     private SkillRepo skillRepo;
     @Mock
+    private SkillService skillService;
+    @Mock
+    private TagService tagService;
+    @Mock
     private UserService userService;
     @Mock
     private CvParsingService cvParsingService;
@@ -52,6 +58,8 @@ class CandidateServiceCvTest {
         candidateService = new CandidateService(
                 candidateRepo,
                 skillRepo,
+                skillService,
+                tagService,
                 userService,
                 candidateMapper,
                 cvParsingService,
