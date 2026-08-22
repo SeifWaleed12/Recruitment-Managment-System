@@ -48,10 +48,15 @@ public class ApplicationController {
 
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasAnyRole('ADMIN', 'HR')")
-    public ApplicationRespond updateApplicationStatus(
+    public ApplicationRespond transitionStatus(
             @PathVariable(name = "id") String applicationId,
             @Valid @RequestBody TransitionStatusRequest request) {
-        return this.applicationService.transitionStatus(applicationId, request.getNewStatus());
+        return this.applicationService.transitionStatus(
+                applicationId,
+                request.getNewStatus(),
+                request.getInterviewDate(),
+                request.getInterviewerId()
+        );
     }
 
     @PatchMapping("/{id}/assign")
