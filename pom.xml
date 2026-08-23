@@ -68,6 +68,11 @@
             <artifactId>spring-security-ldap</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.unboundid</groupId>
+            <artifactId>unboundid-ldapsdk</artifactId>
+        </dependency>
+
         <!-- Database & Migrations -->
         <dependency>
             <groupId>org.postgresql</groupId>

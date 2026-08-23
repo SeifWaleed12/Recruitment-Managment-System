@@ -1,12 +1,10 @@
 package com.banquemisr.recruitment.web.DTOs.request;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.banquemisr.recruitment.data.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-
 
 @Getter
 @Setter
@@ -15,19 +13,22 @@ import lombok.*;
 @Builder
 public class UserRequest {
 
-    @NotBlank(message = "email required")
+    @NotBlank(message = "Email is required")
     @Email(message = "Email must be a valid email address")
     private String userEmail;
-    @NotBlank(message = "password required")
+
+    @NotBlank(message = "Password is required")
     @Size(min = 8, message = "Password must be at least 8 characters long")
     private String userPassword;
-    @NotBlank(message = "First name required")
+
+    @NotBlank(message = "First name is required")
     private String userFname;
-    @NotBlank(message = "Last name required")
+
+    @NotBlank(message = "Last name is required")
     private String userLname;
-    @NotBlank(message = "role required")
-    private String roleId;
+
+    private Role role;
+
     @Builder.Default
     private Boolean enabled = true;
-
 }

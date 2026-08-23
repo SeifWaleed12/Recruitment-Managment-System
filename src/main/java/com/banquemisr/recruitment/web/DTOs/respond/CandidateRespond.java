@@ -25,5 +25,6 @@ public class CandidateRespond {
     private String createdByUserId;
     private String createdByUserName;
     private Set<String> skills;
+    private Set<String> tags;
 
 }

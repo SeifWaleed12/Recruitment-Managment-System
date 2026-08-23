@@ -1,25 +1,14 @@
 -- V1__init_schema.sql
 -- Database Schema for Recruitment Management Platform
 
--- 1. ROLES TABLE
-CREATE TABLE roles (
-    id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
-    name text NOT NULL UNIQUE
-);
-
-INSERT INTO roles (name) VALUES 
-('ROLE_ADMIN'), 
-('ROLE_HR'), 
-('ROLE_INTERVIEWER');
-
--- 2. USERS TABLE (One Role to Many Users)
+-- 1. USERS TABLE
 CREATE TABLE users (
     id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
     email text NOT NULL UNIQUE,
     password_hash text NOT NULL,
     first_name text NOT NULL,
     last_name text NOT NULL,
-    role_id VARCHAR(36) NOT NULL REFERENCES roles(id),
+    role VARCHAR(50) NOT NULL,
     enabled BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -115,7 +104,6 @@ CREATE TABLE interview_feedbacks (
     id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
     application_id VARCHAR(36) NOT NULL REFERENCES applications(id) ON DELETE CASCADE,
     interviewer_id VARCHAR(36) NOT NULL REFERENCES users(id),
-    overall_score NUMERIC(3, 2) NOT NULL,
     comments TEXT,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -135,7 +123,7 @@ CREATE TABLE audit_logs (
 
 -- INDEXES FOR HIGH-PERFORMANCE SEARCH & LOOKUPS
 CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_users_role ON users(role_id);
+CREATE INDEX idx_users_role ON users(role);
 CREATE INDEX idx_refresh_tokens_hash ON refresh_tokens(token_hash);
 CREATE INDEX idx_refresh_tokens_user ON refresh_tokens(user_id);
 CREATE INDEX idx_candidates_email ON candidates(email);

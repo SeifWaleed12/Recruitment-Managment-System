@@ -7,6 +7,7 @@ import com.banquemisr.recruitment.cvparsing.service.BulkCvProcessingService;
 import com.banquemisr.recruitment.cvparsing.service.CvParsingService;
 import com.banquemisr.recruitment.data.entity.CandidateEntity;
 import com.banquemisr.recruitment.data.entity.SkillEntity;
+import com.banquemisr.recruitment.data.entity.TagEntity;
 import com.banquemisr.recruitment.data.entity.UserEntity;
 import com.banquemisr.recruitment.data.repo.CandidateRepo;
 import com.banquemisr.recruitment.data.repo.SkillRepo;
@@ -15,6 +16,12 @@ import com.banquemisr.recruitment.exception.ResourceNotFoundException;
 import com.banquemisr.recruitment.mapper.CandidateMapper;
 import com.banquemisr.recruitment.web.DTOs.request.CandidateRequest;
 import com.banquemisr.recruitment.web.DTOs.respond.CandidateRespond;
+import com.banquemisr.recruitment.data.specification.CandidateSearchCriteria;
+import com.banquemisr.recruitment.data.specification.CandidateSpecification;
+import com.banquemisr.recruitment.web.DTOs.respond.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -37,6 +44,8 @@ public class CandidateService {
 
     private final CandidateRepo candidateRepo;
     private final SkillRepo skillRepo;
+    private final SkillService skillService;
+    private final TagService tagService;
     private final UserService userService;
     private final CandidateMapper candidateMapper;
     private final CvParsingService cvParsingService;
@@ -157,8 +166,23 @@ public class CandidateService {
     }
 
     @Transactional(readOnly = true)
+    public PageResponse<CandidateRespond> searchCandidates(CandidateSearchCriteria criteria, Pageable pageable) {
+        Specification<CandidateEntity> spec = CandidateSpecification.build(criteria);
+        Page<CandidateEntity> candidatePage = candidateRepo.findAll(spec, pageable);
+        Page<CandidateRespond> respondPage = candidatePage.map(candidateMapper::toRespond);
+        return PageResponse.of(respondPage);
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<CandidateRespond> getAllCandidates(Pageable pageable) {
+        Page<CandidateEntity> candidatePage = candidateRepo.findAll(pageable);
+        Page<CandidateRespond> respondPage = candidatePage.map(candidateMapper::toRespond);
+        return PageResponse.of(respondPage);
+    }
+
+    @Transactional(readOnly = true)
     public List<CandidateRespond> getAllCandidates() {
-        return candidateRepo.findAll().stream()
+        return candidateRepo.findAllWithSkillsAndTags().stream()
                 .map(candidateMapper::toRespond)
                 .collect(Collectors.toList());
     }
@@ -183,6 +207,38 @@ public class CandidateService {
             throw new ResourceNotFoundException("Candidate not found with ID: " + candidateId);
         }
         candidateRepo.deleteById(candidateId);
+    }
+
+    @Transactional
+    public CandidateRespond assignSkill(String candidateId, String skillId) {
+        CandidateEntity candidate = getCandidateEntityById(candidateId);
+        SkillEntity skill = skillService.getSkillEntityById(skillId);
+        candidate.getSkills().add(skill);
+        return candidateMapper.toRespond(candidateRepo.save(candidate));
+    }
+
+    @Transactional
+    public CandidateRespond removeSkill(String candidateId, String skillId) {
+        CandidateEntity candidate = getCandidateEntityById(candidateId);
+        SkillEntity skill = skillService.getSkillEntityById(skillId);
+        candidate.getSkills().remove(skill);
+        return candidateMapper.toRespond(candidateRepo.save(candidate));
+    }
+
+    @Transactional
+    public CandidateRespond assignTag(String candidateId, String tagId) {
+        CandidateEntity candidate = getCandidateEntityById(candidateId);
+        TagEntity tag = tagService.getTagEntityById(tagId);
+        candidate.getTags().add(tag);
+        return candidateMapper.toRespond(candidateRepo.save(candidate));
+    }
+
+    @Transactional
+    public CandidateRespond removeTag(String candidateId, String tagId) {
+        CandidateEntity candidate = getCandidateEntityById(candidateId);
+        TagEntity tag = tagService.getTagEntityById(tagId);
+        candidate.getTags().remove(tag);
+        return candidateMapper.toRespond(candidateRepo.save(candidate));
     }
 
     private Set<SkillEntity> resolveSkillEntities(Set<String> skillNames) {
