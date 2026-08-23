@@ -31,13 +31,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.time.Instant;
 import java.util.List;
 
-/**
- * Sole security configuration class for the application. Authentication is delegated
- * entirely to LDAP (bind authentication) - there is no local UserDetailsService / DB
- * password check. Because ldapAuthenticationProvider is the only AuthenticationProvider
- * bean in the context, Spring Security automatically uses it to build the shared
- * AuthenticationManager bean below.
- */
 @Configuration
 @EnableMethodSecurity
 @EnableConfigurationProperties(LdapProperties.class)

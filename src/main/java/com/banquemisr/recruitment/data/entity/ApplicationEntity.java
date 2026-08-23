@@ -54,4 +54,8 @@ public class ApplicationEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_recruiter_id")
     private UserEntity assignedRecruiter;
+
+    public void transitionTo(ApplicationStatus newStatus) {
+        this.status = newStatus;
+    }
 }

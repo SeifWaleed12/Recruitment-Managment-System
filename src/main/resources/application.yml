@@ -54,19 +54,18 @@ app:
     max-pool-size: 20
     queue-capacity: 100
     thread-name-prefix: cv-bulk-async-
-  #llm
   llm:
     api-url: ${LLM_API_URL:https://generativelanguage.googleapis.com/v1beta}
     api-key: ${LLM_API_KEY:AQ.Ab8RN6IxzRSlXDotJ6GeLqgIauEiTNeB472AHyvK6SV2AwfyZQ}
     model: ${LLM_MODEL:gemini-2.5-flash}
     timeout-ms: 30000
 
-# LDAP - top-level, matches @ConfigurationProperties(prefix = "ldap")
+# Top-level LDAP Configuration Properties (matches @ConfigurationProperties(prefix = "ldap"))
 ldap:
-  urls: ${LDAP_URLS:ldap://localhost:389}
-  base: ${LDAP_BASE:dc=example,dc=com}
-  username: ${LDAP_ADMIN_DN:cn=admin,dc=example,dc=com}
-  password: ${LDAP_ADMIN_PASSWORD:admin}
+  urls: ${LDAP_URLS:ldap://localhost:8389}
+  base: ${LDAP_BASE:dc=banquemisr,dc=com}
+  username: ${LDAP_USERNAME:cn=admin,dc=banquemisr,dc=com}
+  password: ${LDAP_PASSWORD:adminpassword}
   people-ou: ${LDAP_PEOPLE_OU:ou=people}
   user-search-filter: ${LDAP_USER_SEARCH_FILTER:(mail={0})}
 
