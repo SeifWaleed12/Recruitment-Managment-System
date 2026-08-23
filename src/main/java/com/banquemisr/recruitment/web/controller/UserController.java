@@ -78,7 +78,6 @@ public class UserController {
 
     @PatchMapping("/{id}/password")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('ADMIN')")
     public void changePassword(
             @PathVariable(name = "id") String userId,
             @RequestParam(name = "oldPassword") String oldPassword,
