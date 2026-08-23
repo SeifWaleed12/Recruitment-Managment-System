@@ -48,7 +48,7 @@ public class UserController {
 
     @PostMapping("/hr")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('ADMIN', 'HR')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public UserRespond createHr(@Valid @RequestBody UserRequest userRequest) {
         return this.userService.createHr(userRequest);
     }
