@@ -21,6 +21,17 @@ objectClass: top
 objectClass: organizationalUnit
 ou: people
 
+dn: uid=admin,ou=people,dc=banquemisr,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+uid: admin
+cn: System Admin
+sn: Admin
+mail: admin@banquemisr.com
+userPassword: admin
+
 dn: uid=hr_user,ou=people,dc=banquemisr,dc=com
 objectClass: top
 objectClass: person
@@ -51,7 +62,7 @@ objectClass: inetOrgPerson
 uid: admin_user
 cn: System Admin
 sn: Admin
-mail: admin@banquemisr.com
+mail: sysadmin@banquemisr.com
 userPassword: password123
 
 dn: cn=ROLE_HR,ou=groups,dc=banquemisr,dc=com
@@ -70,4 +81,5 @@ dn: cn=ROLE_ADMIN,ou=groups,dc=banquemisr,dc=com
 objectClass: top
 objectClass: groupOfNames
 cn: ROLE_ADMIN
+member: uid=admin@banquemisr.com,ou=people,dc=banquemisr,dc=com
 member: uid=admin_user,ou=people,dc=banquemisr,dc=com

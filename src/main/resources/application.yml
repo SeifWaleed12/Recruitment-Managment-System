@@ -67,7 +67,7 @@ ldap:
   username: ${LDAP_USERNAME:cn=admin,dc=banquemisr,dc=com}
   password: ${LDAP_PASSWORD:adminpassword}
   people-ou: ${LDAP_PEOPLE_OU:ou=people}
-  user-search-filter: ${LDAP_USER_SEARCH_FILTER:(mail={0})}
+  user-search-filter: "${LDAP_USER_SEARCH_FILTER:(|(mail={0})(uid={0}))}"
 
 # Actuator Health & Metrics Endpoints
 management:

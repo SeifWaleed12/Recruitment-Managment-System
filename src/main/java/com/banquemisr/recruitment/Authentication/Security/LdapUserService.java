@@ -1,5 +1,6 @@
 package com.banquemisr.recruitment.Authentication.Security;
 
+
 import com.banquemisr.recruitment.Authentication.Security.Property.LdapProperties;
 import com.banquemisr.recruitment.exception.DuplicateResourceException;
 import lombok.RequiredArgsConstructor;

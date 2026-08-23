@@ -31,7 +31,7 @@ public class InterviewFeedbackEntity {
     @Column(name = "interview_date", nullable = false)
     private Instant interviewDate;
 
-    @Column(name = "overall_score")
+    @Column(name = "overall_score", columnDefinition = "NUMERIC(3, 2)")
     private Double overallScore;
 
     @Column(name = "comments")

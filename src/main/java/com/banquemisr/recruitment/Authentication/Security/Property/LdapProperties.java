@@ -23,5 +23,5 @@ public class LdapProperties {
      * LDAP filter used to locate a user during authentication. {0} is substituted with the
      * login identifier submitted by the client (we use the user's email/mail attribute).
      */
-    private String userSearchFilter = "(mail={0})";
+    private String userSearchFilter = "(|(mail={0})(uid={0}))";
 }
