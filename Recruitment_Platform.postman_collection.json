@@ -1,0 +1,862 @@
+{
+  "info": {
+    "_postman_id": "b1a2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Recruitment Management System API",
+    "description": "Complete and accurate Postman collection for all 9 Controllers in the Recruitment Management System:\n1. AuthController (/auth)\n2. CandidateController (/api/v1/candidates)\n3. JobController (/api/v1/jobs)\n4. ApplicationController (/api/v1/applications)\n5. InterviewFeedbackController (/api/v1/interview-feedbacks)\n6. SkillController (/api/v1/skills)\n7. TagController (/api/v1/tags)\n8. UserController (/api/v1/users)\n9. RoleController (/api/v1/roles)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "Login (Auto-saves accessToken)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.accessToken) {",
+                  "    pm.collectionVariables.set('accessToken', jsonData.accessToken);",
+                  "    pm.collectionVariables.set('refreshToken', jsonData.refreshToken);",
+                  "    console.log('Saved accessToken and refreshToken to collection variables');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@banquemisr.com\",\n  \"password\": \"adminpassword\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Refresh Access Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.accessToken) {",
+                  "    pm.collectionVariables.set('accessToken', jsonData.accessToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh?refreshToken={{refreshToken}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh"],
+              "query": [{ "key": "refreshToken", "value": "{{refreshToken}}" }]
+            }
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@banquemisr.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/forgot-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "forgot-password"]
+            }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"<reset_token_from_email>\",\n  \"newPassword\": \"NewPassword123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/reset-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "reset-password"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Candidates",
+      "item": [
+        {
+          "name": "Get All Candidates (Paginated)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/candidates?page=0&size=20&sort=candidateId,asc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "candidates"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" },
+                { "key": "sort", "value": "candidateId,asc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Candidates (Filtered & Paginated)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/candidates/search?name=John&skills=Java&tags=Top%20Talent&status=APPLIED&minExperience=2&maxExperience=10&page=0&size=20&sort=candidateId,asc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "candidates", "search"],
+              "query": [
+                { "key": "name", "value": "John", "disabled": true },
+                { "key": "skills", "value": "Java", "disabled": true },
+                { "key": "tags", "value": "Top Talent", "disabled": true },
+                { "key": "status", "value": "APPLIED", "disabled": true },
+                { "key": "minExperience", "value": "2", "disabled": true },
+                { "key": "maxExperience", "value": "10", "disabled": true },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" },
+                { "key": "sort", "value": "candidateId,asc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Candidate by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/candidates/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "candidates", ":id"],
+              "variable": [{ "key": "id", "value": "candidate-uuid" }]
+            }
+          }
+        },
+        {
+          "name": "Single CV Upload & Parse",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "file", "type": "file", "src": "" },
+                { "key": "createdByUserId", "value": "", "type": "text", "disabled": true }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/candidates/upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "candidates", "upload"]
+            }
+          }
+        },
+        {
+          "name": "Bulk CV Upload (Async)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "files", "type": "file", "src": [] },
+                { "key": "createdByUserId", "value": "", "type": "text", "disabled": true }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/candidates/bulk-upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "candidates", "bulk-upload"]
+            }
+          }
+        },
+        {
+          "name": "Get Bulk Upload Job Status",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/candidates/bulk-upload/:jobId/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "candidates", "bulk-upload", ":jobId", "status"],
+              "variable": [{ "key": "jobId", "value": "job-uuid" }]
+            }
+          }
+        },
+        {
+          "name": "Create Candidate Manually",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Tarek\",\n  \"lastName\": \"Hassan\",\n  \"email\": \"tarek.hassan@example.com\",\n  \"phone\": \"+201012345678\",\n  \"yearsOfExperience\": 5,\n  \"createdByUserId\": null\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/candidates",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "candidates"]
+            }
+          }
+        },
+        {
+          "name": "Update Candidate",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Tarek\",\n  \"lastName\": \"Hassan\",\n  \"email\": \"tarek.hassan@example.com\",\n  \"phone\": \"+201012345678\",\n  \"yearsOfExperience\": 6,\n  \"createdByUserId\": null\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/candidates/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "candidates", ":id"],
+              "variable": [{ "key": "id", "value": "candidate-uuid" }]
+            }
+          }
+        },
+        {
+          "name": "Delete Candidate",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/candidates/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "candidates", ":id"],
+              "variable": [{ "key": "id", "value": "candidate-uuid" }]
+            }
+          }
+        },
+        {
+          "name": "Assign Skill to Candidate",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/candidates/:candidateId/skills/:skillId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "candidates", ":candidateId", "skills", ":skillId"],
+              "variable": [
+                { "key": "candidateId", "value": "candidate-uuid" },
+                { "key": "skillId", "value": "skill-uuid" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Remove Skill from Candidate",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/candidates/:candidateId/skills/:skillId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "candidates", ":candidateId", "skills", ":skillId"],
+              "variable": [
+                { "key": "candidateId", "value": "candidate-uuid" },
+                { "key": "skillId", "value": "skill-uuid" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Assign Tag to Candidate",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/candidates/:candidateId/tags/:tagId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "candidates", ":candidateId", "tags", ":tagId"],
+              "variable": [
+                { "key": "candidateId", "value": "candidate-uuid" },
+                { "key": "tagId", "value": "tag-uuid" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Remove Tag from Candidate",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/candidates/:candidateId/tags/:tagId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "candidates", ":candidateId", "tags", ":tagId"],
+              "variable": [
+                { "key": "candidateId", "value": "candidate-uuid" },
+                { "key": "tagId", "value": "tag-uuid" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Jobs",
+      "item": [
+        {
+          "name": "Get All Jobs (Optional Status Filter)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/jobs?status=OPEN",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "jobs"],
+              "query": [
+                { "key": "status", "value": "OPEN", "description": "OPEN or CLOSED", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Job by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/jobs/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "jobs", ":id"],
+              "variable": [{ "key": "id", "value": "job-uuid" }]
+            }
+          }
+        },
+        {
+          "name": "Create Job",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Senior Java Backend Engineer\",\n  \"description\": \"Develop high-throughput banking microservices.\",\n  \"department\": \"Information Technology\",\n  \"location\": \"Cairo, Egypt\",\n  \"status\": \"OPEN\",\n  \"createdByUserId\": \"<user_id_here>\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/jobs",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "jobs"]
+            }
+          }
+        },
+        {
+          "name": "Update Job",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Lead Java Architect\",\n  \"description\": \"Lead architecture and engineering teams.\",\n  \"department\": \"Information Technology\",\n  \"location\": \"Cairo, Egypt\",\n  \"status\": \"OPEN\",\n  \"createdByUserId\": \"<user_id_here>\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/jobs/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "jobs", ":id"],
+              "variable": [{ "key": "id", "value": "job-uuid" }]
+            }
+          }
+        },
+        {
+          "name": "Change Job Status",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/jobs/:id/status?status=CLOSED",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "jobs", ":id", "status"],
+              "query": [{ "key": "status", "value": "CLOSED" }],
+              "variable": [{ "key": "id", "value": "job-uuid" }]
+            }
+          }
+        },
+        {
+          "name": "Delete Job",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/jobs/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "jobs", ":id"],
+              "variable": [{ "key": "id", "value": "job-uuid" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Applications",
+      "item": [
+        {
+          "name": "Create Application",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"candidateId\": \"<candidate_uuid>\",\n  \"jobId\": \"<job_uuid>\",\n  \"status\": \"APPLIED\",\n  \"assignedRecruiterId\": \"<user_uuid>\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/applications",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "applications"]
+            }
+          }
+        },
+        {
+          "name": "Get Application by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/applications/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "applications", ":id"],
+              "variable": [{ "key": "id", "value": "application-uuid" }]
+            }
+          }
+        },
+        {
+          "name": "Get Applications by Job ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/applications/job/:jobId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "applications", "job", ":jobId"],
+              "variable": [{ "key": "jobId", "value": "job-uuid" }]
+            }
+          }
+        },
+        {
+          "name": "Get Applications by Candidate ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/applications/candidate/:candidateId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "applications", "candidate", ":candidateId"],
+              "variable": [{ "key": "candidateId", "value": "candidate-uuid" }]
+            }
+          }
+        },
+        {
+          "name": "Transition Application Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newStatus\": \"INTERVIEW\",\n  \"interviewDate\": \"2026-09-01T10:00:00Z\",\n  \"interviewerId\": \"<interviewer_user_uuid>\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/applications/:id/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "applications", ":id", "status"],
+              "variable": [{ "key": "id", "value": "application-uuid" }]
+            }
+          }
+        },
+        {
+          "name": "Assign Recruiter",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/applications/:id/assign?recruiterUserId=<user_uuid>",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "applications", ":id", "assign"],
+              "query": [{ "key": "recruiterUserId", "value": "<user_uuid>" }],
+              "variable": [{ "key": "id", "value": "application-uuid" }]
+            }
+          }
+        },
+        {
+          "name": "Delete Application",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/applications/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "applications", ":id"],
+              "variable": [{ "key": "id", "value": "application-uuid" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Interview Feedbacks",
+      "item": [
+        {
+          "name": "Submit Interview Feedback",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"overallScore\": 8.5,\n  \"comments\": \"Strong candidate with deep knowledge in distributed systems and Spring Cloud.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/interview-feedbacks/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "interview-feedbacks", ":id"],
+              "variable": [{ "key": "id", "value": "feedback-uuid" }]
+            }
+          }
+        },
+        {
+          "name": "Get Feedbacks for Application",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/interview-feedbacks/application/:applicationId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "interview-feedbacks", "application", ":applicationId"],
+              "variable": [{ "key": "applicationId", "value": "application-uuid" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Skills",
+      "item": [
+        {
+          "name": "Get All Skills (Optional Query Search)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/skills?query=Java",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "skills"],
+              "query": [
+                { "key": "query", "value": "Java", "description": "Optional search term", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Skill by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/skills/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "skills", ":id"],
+              "variable": [{ "key": "id", "value": "skill-uuid" }]
+            }
+          }
+        },
+        {
+          "name": "Create Skill",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Spring Boot\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/skills",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "skills"]
+            }
+          }
+        },
+        {
+          "name": "Delete Skill",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/skills/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "skills", ":id"],
+              "variable": [{ "key": "id", "value": "skill-uuid" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Tags",
+      "item": [
+        {
+          "name": "Get All Tags",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tags",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "tags"]
+            }
+          }
+        },
+        {
+          "name": "Create Tag",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Top Talent\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tags",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "tags"]
+            }
+          }
+        },
+        {
+          "name": "Delete Tag",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tags/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "tags", ":id"],
+              "variable": [{ "key": "id", "value": "tag-uuid" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Users",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users"]
+            }
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", ":id"],
+              "variable": [{ "key": "id", "value": "user-uuid" }]
+            }
+          }
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userEmail\": \"new.user@banquemisr.com\",\n  \"userPassword\": \"Pass1234!\",\n  \"userFname\": \"Kareem\",\n  \"userLname\": \"Adel\",\n  \"role\": \"ROLE_HR\",\n  \"enabled\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users"]
+            }
+          }
+        },
+        {
+          "name": "Create Interviewer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userEmail\": \"interviewer@banquemisr.com\",\n  \"userPassword\": \"Pass1234!\",\n  \"userFname\": \"Tariq\",\n  \"userLname\": \"Nasser\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/interviewer",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "interviewer"]
+            }
+          }
+        },
+        {
+          "name": "Create HR User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userEmail\": \"hr.user@banquemisr.com\",\n  \"userPassword\": \"Pass1234!\",\n  \"userFname\": \"Mona\",\n  \"userLname\": \"Hassan\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/hr",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "hr"]
+            }
+          }
+        },
+        {
+          "name": "Create Admin",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userEmail\": \"admin.user@banquemisr.com\",\n  \"userPassword\": \"Pass1234!\",\n  \"userFname\": \"Admin\",\n  \"userLname\": \"User\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/admin",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "admin"]
+            }
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userEmail\": \"kareem.adel@banquemisr.com\",\n  \"userPassword\": \"NewPass1234!\",\n  \"userFname\": \"Kareem\",\n  \"userLname\": \"Adel\",\n  \"role\": \"ROLE_HR\",\n  \"enabled\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", ":id"],
+              "variable": [{ "key": "id", "value": "user-uuid" }]
+            }
+          }
+        },
+        {
+          "name": "Change User Role",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/:id/role?role=ROLE_HR",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", ":id", "role"],
+              "query": [{ "key": "role", "value": "ROLE_HR" }],
+              "variable": [{ "key": "id", "value": "user-uuid" }]
+            }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/:id/password?oldPassword=Pass1234!&newPassword=NewPass1234!",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", ":id", "password"],
+              "query": [
+                { "key": "oldPassword", "value": "Pass1234!" },
+                { "key": "newPassword", "value": "NewPass1234!" }
+              ],
+              "variable": [{ "key": "id", "value": "user-uuid" }]
+            }
+          }
+        },
+        {
+          "name": "Toggle User Enabled",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/:id/enabled?enabled=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", ":id", "enabled"],
+              "query": [{ "key": "enabled", "value": "true" }],
+              "variable": [{ "key": "id", "value": "user-uuid" }]
+            }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", ":id"],
+              "variable": [{ "key": "id", "value": "user-uuid" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. Roles",
+      "item": [
+        {
+          "name": "Get All Roles",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/roles",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "roles"]
+            }
+          }
+        },
+        {
+          "name": "Get Role by Name",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/roles/:name",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "roles", ":name"],
+              "variable": [{ "key": "name", "value": "ROLE_ADMIN" }]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

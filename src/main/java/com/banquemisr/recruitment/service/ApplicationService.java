@@ -79,7 +79,6 @@ public class ApplicationService {
 
         ApplicationEntity entity = applicationRepo.findById(applicationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found with ID: " + applicationId));
-
         entity.transitionTo(newStatus);
         ApplicationEntity updatedEntity = applicationRepo.save(entity);
 

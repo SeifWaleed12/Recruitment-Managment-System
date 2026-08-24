@@ -7,7 +7,7 @@ public enum ApplicationStatus {
     APPLIED {
         @Override
         public Set<ApplicationStatus> nextStates(){
-            return EnumSet.of(SCREENING, REJECTED, WITHDRAWN);
+        return EnumSet.of(SCREENING, REJECTED, WITHDRAWN);
         }
     },
     SCREENING{
