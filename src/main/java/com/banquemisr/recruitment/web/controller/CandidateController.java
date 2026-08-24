@@ -77,7 +77,7 @@ public class CandidateController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_HR')")
     public CandidateRespond uploadAndParseCv(
             @RequestParam("file") MultipartFile file,
-            @RequestParam(name = "createdByUserId", required = false) String createdByUserId) {
+            @RequestParam(name = "createdByUserId", required = true) String createdByUserId) {
         return this.candidateService.parseAndSaveCandidate(file, createdByUserId);
     }
 

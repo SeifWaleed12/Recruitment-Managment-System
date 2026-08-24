@@ -39,13 +39,18 @@ public class GeminiLlmClient implements LlmClient {
             throw new IllegalStateException("LLM API key is not configured (app.llm.api-key)");
         }
 
+        int maxTokens = llmProperties.getMaxOutputTokens() > 0 ? llmProperties.getMaxOutputTokens() : 4096;
+
         Map<String, Object> requestBody = Map.of(
                 "system_instruction", Map.of("parts", List.of(Map.of("text", systemPrompt))),
                 "contents", List.of(Map.of(
                         "role", "user",
                         "parts", List.of(Map.of("text", userPrompt))
                 )),
-                "generationConfig", Map.of("maxOutputTokens", llmProperties.getMaxOutputTokens())
+                "generationConfig", Map.of(
+                        "maxOutputTokens", maxTokens,
+                        "temperature", 0.1
+                )
         );
 
         String path = "/models/" + llmProperties.getModel() + ":generateContent";

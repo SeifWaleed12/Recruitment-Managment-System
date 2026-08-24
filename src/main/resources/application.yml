@@ -52,6 +52,7 @@ app:
     api-key: ${LLM_API_KEY:AQ.Ab8RN6IxzRSlXDotJ6GeLqgIauEiTNeB472AHyvK6SV2AwfyZQ}
     model: ${LLM_MODEL:gemini-2.5-flash}
     timeout-ms: 30000
+    max-output-tokens: ${LLM_MAX_OUTPUT_TOKENS:4096}
 
 # Top-level LDAP Configuration Properties (matches @ConfigurationProperties(prefix = "ldap"))
 ldap:

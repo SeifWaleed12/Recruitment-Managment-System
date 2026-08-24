@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "app.llm")
 public class LlmProperties {
 
-    private String apiUrl;
+    private String apiUrl = "https://generativelanguage.googleapis.com/v1beta";
     private String apiKey;
-    private String model;
-    private int timeoutMs;
-    private String apiVersion;
-    private int maxOutputTokens;
+    private String model = "gemini-2.5-flash";
+    private int timeoutMs = 30000;
+    private String apiVersion = "v1beta";
+    private int maxOutputTokens = 4096;
 }
