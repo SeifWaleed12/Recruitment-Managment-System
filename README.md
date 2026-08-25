@@ -338,7 +338,6 @@ Configuration values can be overridden via `application.yml` or environment vari
 
 ## 📚 Documentation & Resources
 
-- 📘 **[Final Presentation Master Guide](./FINAL_PRESENTATION_MASTER_GUIDE.md)** — In-depth architectural breakdown, defense Q&A guide, and security explanations.
 - 📬 **[Postman Collection](./Recruitment_Platform.postman_collection.json)** — Pre-configured request collection for all endpoints.
 - 📜 **[LDIF Initial Directory Seed](./src/main/resources/users.ldif)** — Pre-populated LDAP accounts and role groups.
 
