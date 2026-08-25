@@ -349,7 +349,6 @@ Configuration values can be overridden via `application.yml` or environment vari
 Developed for the **Banque Misr Backend Engineering Track**.
 
 - **Project Owners**:
-  - Alaa
   - Sama El Shorbagy
   - Sama El Khateeb
   - Seif Waleed
