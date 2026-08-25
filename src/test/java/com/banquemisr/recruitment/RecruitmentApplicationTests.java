@@ -1,15 +1,13 @@
 package com.banquemisr.recruitment;
 
+import com.banquemisr.recruitment.base.BaseIntegrationTest;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest
-@ActiveProfiles("test")
-class RecruitmentApplicationTests {
+class RecruitmentApplicationTests extends BaseIntegrationTest {
 
     @Test
     void contextLoads() {
     }
 
 }
+
