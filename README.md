@@ -304,7 +304,7 @@ Verify running containers:
 ```bash
 docker compose ps
 ```
-- **PostgreSQL**: `localhost:5432` (db: `recruitment_db`, user/pass: `postgres/postgres`)
+- **PostgreSQL**: `localhost:5432` (db: `recruitment_db`, user: `postgres`)
 - **OpenLDAP**: `localhost:389` (`dc=banquemisr,dc=com`)
 - **MailDev UI**: `http://localhost:1080` (SMTP at `localhost:1025`)
 
@@ -326,12 +326,14 @@ Visit the live Swagger UI dashboard in your browser:
 
 Configuration values can be overridden via `application.yml` or environment variables:
 
-| Variable | Default Value | Purpose |
+| Variable | Placeholder / Default | Purpose |
 | :--- | :--- | :--- |
-| `JWT_SECRET` | `404E6352...` (256-bit Hex) | Secret key for signing Access Tokens |
-| `LLM_API_KEY` | *(Configured Gemini Key)* | Google Gemini 2.5 Flash API Key |
+| `JWT_SECRET` | `<YOUR_256_BIT_SECRET_KEY>` | Secret HMAC-SHA256 key for signing Access Tokens |
+| `LLM_API_KEY` | `<YOUR_GEMINI_API_KEY>` | Google Gemini 2.5 Flash API Key |
 | `LDAP_URLS` | `ldap://localhost:389` | OpenLDAP connection URL |
 | `LDAP_BASE` | `dc=banquemisr,dc=com` | LDAP Base DN |
+| `LDAP_USERNAME` | `cn=admin,dc=banquemisr,dc=com` | LDAP Admin Bind DN |
+| `LDAP_PASSWORD` | `<YOUR_LDAP_ADMIN_PASSWORD>` | LDAP Admin Bind Password |
 | `SPRING_DATASOURCE_URL` | `jdbc:postgresql://localhost:5432/recruitment_db` | PostgreSQL JDBC connection URL |
 
 ---
@@ -343,7 +345,13 @@ Configuration values can be overridden via `application.yml` or environment vari
 
 ---
 
-## 👥 Contributors & Authors
-Developed for **Banque Misr Backend Engineering Track**.
-- **Owner**: Seif Waleed
-- **Supervising Architect**: Mohanad Magdy
+## 👥 Project Owners & Contributors
+Developed for the **Banque Misr Backend Engineering Track**.
+
+- **Project Owners**:
+  - Alaa
+  - Sama El Shorbagy
+  - Sama El Khateeb
+  - Seif Waleed
+- **Supervising Architect**:
+  - Mohanad Magdy
