@@ -27,3 +27,7 @@ target/test-uploads/
 
 # Environment files with secrets
 .env
+
+# Local presentation and defense study guides (kept on local PC only)
+FINAL_PRESENTATION_MASTER_GUIDE.md
+
