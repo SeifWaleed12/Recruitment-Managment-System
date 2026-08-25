@@ -13,5 +13,7 @@ public interface SkillRepo extends JpaRepository<SkillEntity, String> {
 
     Optional<SkillEntity> findByNameIgnoreCase(String name);
 
+    List<SkillEntity> findByNameContainingIgnoreCase(String name);
+
     List<SkillEntity> findByNameIn(Collection<String> names);
 }

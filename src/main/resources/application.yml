@@ -11,13 +11,6 @@ spring:
     multipart:
       enabled: true
       max-file-size: 10MB
-      max-request-size: 20MB
-  ldap:
-    embedded:
-      port: 8389
-      base-dn: dc=banquemisr,dc=com
-      ldif: classpath:users.ldif
-
 server:
   port: 8080
   error:
@@ -59,15 +52,16 @@ app:
     api-key: ${LLM_API_KEY:AQ.Ab8RN6IxzRSlXDotJ6GeLqgIauEiTNeB472AHyvK6SV2AwfyZQ}
     model: ${LLM_MODEL:gemini-2.5-flash}
     timeout-ms: 30000
+    max-output-tokens: ${LLM_MAX_OUTPUT_TOKENS:4096}
 
 # Top-level LDAP Configuration Properties (matches @ConfigurationProperties(prefix = "ldap"))
 ldap:
-  urls: ${LDAP_URLS:ldap://localhost:8389}
+  urls: ${LDAP_URLS:ldap://localhost:389}
   base: ${LDAP_BASE:dc=banquemisr,dc=com}
   username: ${LDAP_USERNAME:cn=admin,dc=banquemisr,dc=com}
   password: ${LDAP_PASSWORD:adminpassword}
   people-ou: ${LDAP_PEOPLE_OU:ou=people}
-  user-search-filter: ${LDAP_USER_SEARCH_FILTER:(mail={0})}
+  user-search-filter: "${LDAP_USER_SEARCH_FILTER:(|(mail={0})(uid={0}))}"
 
 # Actuator Health & Metrics Endpoints
 management:

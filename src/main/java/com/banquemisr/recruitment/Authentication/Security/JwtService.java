@@ -52,6 +52,26 @@ public class JwtService {
         }
     }
 
+    public String generatePasswordResetToken(UserEntity user) {
+        return Jwts.builder()
+                .subject(user.getUserEmail())
+                .claim("userId", user.getUserId())
+                .claim("type", "PASSWORD_RESET")
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + jwtProperties.getResetTokenExpirationMs()))
+                .signWith(getSigningKey())
+                .compact();
+    }
+
+    public String validateAndExtractEmailFromResetToken(String token) {
+        Claims claims = extractClaims(token);
+        String type = claims.get("type", String.class);
+        if (!"PASSWORD_RESET".equals(type)) {
+            throw new IllegalArgumentException("Invalid token type for password reset");
+        }
+        return claims.getSubject();
+    }
+
     private Claims extractClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
