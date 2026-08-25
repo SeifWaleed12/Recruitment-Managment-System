@@ -1,0 +1,57 @@
+dn: dc=banquemisr,dc=com
+objectClass: top
+objectClass: domain
+dc: banquemisr
+
+dn: cn=admin,dc=banquemisr,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+cn: admin
+sn: admin
+userPassword: adminpassword
+
+dn: ou=groups,dc=banquemisr,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: groups
+
+dn: ou=people,dc=banquemisr,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: people
+
+dn: uid=admin,ou=people,dc=banquemisr,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+uid: admin
+cn: System Admin
+sn: Admin
+mail: admin@banquemisr.com
+userPassword: admin
+
+dn: cn=ROLE_ADMIN,ou=groups,dc=banquemisr,dc=com
+objectClass: top
+objectClass: groupOfNames
+cn: ROLE_ADMIN
+member: uid=admin,ou=people,dc=banquemisr,dc=com
+
+dn: cn=ROLE_HR,ou=groups,dc=banquemisr,dc=com
+objectClass: top
+objectClass: groupOfNames
+cn: ROLE_HR
+member: uid=admin,ou=people,dc=banquemisr,dc=com
+
+dn: cn=ROLE_INTERVIEWER,ou=groups,dc=banquemisr,dc=com
+objectClass: top
+objectClass: groupOfNames
+cn: ROLE_INTERVIEWER
+member: uid=admin,ou=people,dc=banquemisr,dc=com
+
+dn: cn=ROLE_CANDIDATE,ou=groups,dc=banquemisr,dc=com
+objectClass: top
+objectClass: groupOfNames
+cn: ROLE_CANDIDATE
+member: uid=admin,ou=people,dc=banquemisr,dc=com

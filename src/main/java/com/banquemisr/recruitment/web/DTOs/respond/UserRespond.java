@@ -1,6 +1,6 @@
 package com.banquemisr.recruitment.web.DTOs.respond;
 
-
+import com.banquemisr.recruitment.data.enums.Role;
 import lombok.*;
 
 @Getter
@@ -14,9 +14,7 @@ public class UserRespond {
     private String userEmail;
     private String userFname;
     private String userLname;
-    private String roleId;
+    private Role role;
     private String roleName;
     private Boolean enabled;
-
-
 }

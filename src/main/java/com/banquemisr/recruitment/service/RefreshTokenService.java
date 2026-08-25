@@ -65,7 +65,11 @@ public class RefreshTokenService {
 
     @Transactional
     public AuthResponse refreshAccessToken(String rawRefreshToken) {
-        RefreshTokenEntity stored = refreshTokenRepo.findByTokenHash(hashToken(rawRefreshToken))
+        if (rawRefreshToken == null || rawRefreshToken.isBlank()) {
+            throw new BadCredentialsException("Invalid refresh token");
+        }
+        String cleanToken = rawRefreshToken.trim();
+        RefreshTokenEntity stored = refreshTokenRepo.findByTokenHash(hashToken(cleanToken))
                 .orElseThrow(() -> new BadCredentialsException("Invalid refresh token"));
 
         if (stored.getExpiresAt().isBefore(Instant.now())) {

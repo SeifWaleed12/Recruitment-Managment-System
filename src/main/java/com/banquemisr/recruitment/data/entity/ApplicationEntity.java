@@ -1,6 +1,7 @@
 package com.banquemisr.recruitment.data.entity;
 
 import com.banquemisr.recruitment.data.enums.ApplicationStatus;
+import com.banquemisr.recruitment.exception.IllegalStateTransitionException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,6 +19,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.AccessLevel;
 
 @Entity
 @Table(
@@ -49,9 +51,19 @@ public class ApplicationEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     @Builder.Default
+    @Setter(AccessLevel.NONE)
     private ApplicationStatus status = ApplicationStatus.APPLIED;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_recruiter_id")
     private UserEntity assignedRecruiter;
+
+    public void transitionTo(ApplicationStatus newStatus){
+        if (!this.status.canTransitionTo(newStatus)){
+            throw new IllegalStateTransitionException(
+                    "Cannot transition application from "+ this.status + " to " + newStatus
+            );
+        }
+        this.status=newStatus;
+    }
 }

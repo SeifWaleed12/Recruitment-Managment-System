@@ -1,11 +1,9 @@
 package com.banquemisr.recruitment.service;
 
-import com.banquemisr.recruitment.data.entity.ApplicationEntity;
-import com.banquemisr.recruitment.data.entity.CandidateEntity;
-import com.banquemisr.recruitment.data.entity.JobEntity;
-import com.banquemisr.recruitment.data.entity.UserEntity;
+import com.banquemisr.recruitment.data.entity.*;
 import com.banquemisr.recruitment.data.enums.ApplicationStatus;
 import com.banquemisr.recruitment.data.repo.ApplicationRepo;
+import com.banquemisr.recruitment.data.repo.InterviewFeedbackRepo;
 import com.banquemisr.recruitment.exception.DuplicateResourceException;
 import com.banquemisr.recruitment.exception.ResourceNotFoundException;
 import com.banquemisr.recruitment.mapper.ApplicationMapper;
@@ -15,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +26,8 @@ public class ApplicationService {
     private final JobService jobService;
     private final UserService userService;
     private final ApplicationMapper applicationMapper;
+    private final InterviewFeedbackRepo interviewFeedbackRepo;
+    private final EmailService emailService;
 
     @Transactional
     public ApplicationRespond createApplication(ApplicationRequest request) {
@@ -73,11 +74,38 @@ public class ApplicationService {
     }
 
     @Transactional
-    public ApplicationRespond updateApplicationStatus(String applicationId, ApplicationStatus status) {
+    public ApplicationRespond transitionStatus(
+            String applicationId, ApplicationStatus newStatus, Instant interviewDate, String interviewerId) {
+
         ApplicationEntity entity = applicationRepo.findById(applicationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found with ID: " + applicationId));
-        entity.setStatus(status);
+        entity.transitionTo(newStatus);
         ApplicationEntity updatedEntity = applicationRepo.save(entity);
+
+        if (newStatus == ApplicationStatus.INTERVIEW) {
+            if (interviewDate == null) {
+                throw new IllegalArgumentException("Interview date is required when moving to INTERVIEW");
+            }
+            if (interviewerId == null || interviewerId.isBlank()) {
+                throw new IllegalArgumentException("An interviewer must be assigned when moving to INTERVIEW");
+            }
+
+            UserEntity interviewer = userService.getUserEntityById(interviewerId);
+
+            InterviewFeedbackEntity feedback = InterviewFeedbackEntity.builder()
+                    .application(updatedEntity)
+                    .interviewer(interviewer)
+                    .interviewDate(interviewDate)
+                    .build();
+            interviewFeedbackRepo.save(feedback);
+
+            emailService.sendInterviewInvitation(
+                    updatedEntity.getCandidate().getEmail(),
+                    updatedEntity.getCandidate().getFirstName(),
+                    interviewDate
+            );
+        }
+
         return applicationMapper.toRespond(updatedEntity);
     }
 
